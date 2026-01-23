@@ -1,0 +1,235 @@
+{
+  "common": {
+    "search": "Rechercher un cours...",
+    "searchPlaceholder": "Rechercher un cours, une thématique...",
+    "searchButton": "Rechercher",
+    "login": "Connexion",
+    "register": "Inscription",
+    "backToHome": "Retour à l'accueil",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer"
+  },
+  "nav": {
+    "home": "Accueil",
+    "courses": "Cours",
+    "thematics": "Thématiques",
+    "institutions": "Établissements",
+    "about": "À propos"
+  },
+  "header": {
+    "portalName": "Portail des Cours",
+    "selectLanguage": "Langue"
+  },
+  "home": {
+    "badge": "Plateforme officielle ENSPY",
+    "title": "Formez-vous à",
+    "titleHighlight": "l'excellence",
+    "titleEnd": "polytechnique",
+    "description": "Accédez aux formations de qualité dispensées par les experts de l'École Nationale Supérieure Polytechnique de Yaoundé. Des cours conçus pour former les ingénieurs de demain.",
+    "exploreCourses": "Explorer les cours",
+    "learnMore": "En savoir plus",
+    "stats": {
+      "courses": "Cours disponibles",
+      "instructors": "Instructeurs",
+      "students": "Étudiants"
+    },
+    "certifications": "Certifications",
+    "certificationsDesc": "Reconnues officiellement",
+    "thematics": {
+      "title": "Explorez nos thématiques",
+      "subtitle": "Découvrez nos domaines d'expertise et trouvez le parcours qui correspond à vos ambitions professionnelles."
+    },
+    "trending": {
+      "title": "Cours tendances",
+      "subtitle": "Les formations les plus populaires du moment",
+      "viewAll": "Voir tous les cours"
+    },
+    "features": {
+      "title": "Pourquoi choisir notre plateforme ?",
+      "quality": {
+        "title": "Contenu de qualité",
+        "description": "Des cours créés par des experts reconnus de l'ENSPY"
+      },
+      "flexible": {
+        "title": "Apprentissage flexible",
+        "description": "Apprenez à votre rythme, où que vous soyez"
+      },
+      "certified": {
+        "title": "Certifications reconnues",
+        "description": "Obtenez des attestations valorisées par les employeurs"
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer votre apprentissage ?",
+      "description": "Rejoignez des milliers d'apprenants et développez vos compétences dès aujourd'hui.",
+      "button": "Commencer maintenant"
+    }
+  },
+  "courses": {
+    "pageTitle": "Trouver un cours en ligne",
+    "pageDescription": "Explorez notre catalogue de formations et trouvez le cours qui correspond à vos objectifs d'apprentissage.",
+    "breadcrumb": {
+      "home": "Accueil",
+      "courses": "Cours"
+    },
+    "filters": {
+      "title": "Filtres",
+      "reset": "Réinitialiser",
+      "level": "Niveau",
+      "duration": "Durée",
+      "format": "Format",
+      "language": "Langue",
+      "type": "Type",
+      "availability": "Disponibilité"
+    },
+    "levels": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "expert": "Expert"
+    },
+    "durations": {
+      "0-2h": "0 - 2 heures",
+      "2-5h": "2 - 5 heures",
+      "5-10h": "5 - 10 heures",
+      "10h+": "Plus de 10 heures"
+    },
+    "formats": {
+      "video": "Vidéo",
+      "text": "Texte",
+      "exercises": "Exercices",
+      "mixed": "Mixte"
+    },
+    "types": {
+      "free": "Gratuit",
+      "paid": "Payant",
+      "certified": "Certifiant"
+    },
+    "availabilities": {
+      "available": "Disponible",
+      "upcoming": "À venir",
+      "archived": "Archivé"
+    },
+    "results": "{count} cours trouvé(s)",
+    "noResults": {
+      "title": "Aucun cours trouvé",
+      "description": "Essayez de modifier vos filtres ou votre recherche."
+    },
+    "sort": {
+      "relevance": "Pertinence",
+      "date": "Date",
+      "popularity": "Popularité",
+      "rating": "Note"
+    },
+    "card": {
+      "enrolled": "inscrits",
+      "trending": "Tendance",
+      "by": "Par"
+    }
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Accédez à votre espace personnel et vos cours",
+    "email": "Adresse email",
+    "emailPlaceholder": "votre.email@example.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "submitting": "Connexion en cours...",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "registerLink": "Inscrivez-vous",
+    "error": {
+      "required": "Veuillez remplir tous les champs",
+      "backendNotConnected": "La connexion sera disponible une fois le backend connecté."
+    }
+  },
+  "register": {
+    "title": "Inscription",
+    "subtitle": "Créez votre compte pour accéder aux cours",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "KAMGA",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Jean",
+    "email": "Adresse email",
+    "emailPlaceholder": "votre.email@example.com",
+    "level": "Niveau d'études",
+    "levelPlaceholder": "Sélectionner",
+    "department": "Département / Filière",
+    "departmentPlaceholder": "Sélectionner",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Minimum 8 caractères",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Retapez votre mot de passe",
+    "passwordStrength": {
+      "label": "Force du mot de passe",
+      "weak": "Faible",
+      "medium": "Moyen",
+      "strong": "Fort"
+    },
+    "terms": {
+      "text": "J'accepte les",
+      "conditions": "conditions d'utilisation",
+      "and": "et la",
+      "privacy": "politique de confidentialité",
+      "suffix": "du portail des cours ENSPY."
+    },
+    "newsletter": "Je souhaite recevoir par email les informations sur les nouveaux cours et les actualités de l'ENSPY. (Optionnel)",
+    "submit": "Créer mon compte",
+    "submitting": "Création du compte...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Connectez-vous",
+    "success": "Votre compte a été créé !",
+    "levels": {
+      "licence1": "Licence 1",
+      "licence2": "Licence 2",
+      "licence3": "Licence 3",
+      "master1": "Master 1",
+      "master2": "Master 2",
+      "doctorat": "Doctorat",
+      "professionnel": "Professionnel",
+      "autre": "Autre"
+    },
+    "departments": {
+      "genie-info": "Génie Informatique",
+      "genie-civil": "Génie Civil",
+      "genie-elec": "Génie Électrique",
+      "genie-meca": "Génie Mécanique",
+      "genie-indus": "Génie Industriel",
+      "telecom": "Télécommunications",
+      "math-info": "Mathématiques-Informatique",
+      "autre": "Autre"
+    },
+    "errors": {
+      "firstName": "Le prénom est requis",
+      "lastName": "Le nom est requis",
+      "email": "L'adresse email est requise",
+      "emailInvalid": "L'adresse email n'est pas valide",
+      "password": "Le mot de passe est requis",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPassword": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "terms": "Vous devez accepter les conditions d'utilisation"
+    }
+  },
+  "footer": {
+    "description": "Plateforme de cours en ligne de l'École Nationale Supérieure Polytechnique de Yaoundé.",
+    "navigation": "Navigation",
+    "resources": "Ressources",
+    "help": "Aide et FAQ",
+    "contact": "Contact",
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Recevez les dernières actualités et nouveaux cours",
+      "placeholder": "Votre email",
+      "submit": "S'inscrire"
+    },
+    "copyright": "© {year} ENSPY. Tous droits réservés.",
+    "links": {
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "legal": "Mentions légales"
+    }
+  }
+}

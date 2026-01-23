@@ -1,0 +1,161 @@
+/* ============================================
+   ENSPY COURSES PORTAL - Badge Styles
+   ============================================ */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+
+/* Sizes */
+.badge--sm {
+    padding: 2px var(--spacing-2);
+    font-size: 10px;
+}
+
+.badge--lg {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+}
+
+/* Variants */
+.badge--primary {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-dark);
+}
+
+.badge--secondary {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.badge--success {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.badge--warning {
+    background-color: #FFF3E0;
+    color: #EF6C00;
+}
+
+.badge--error {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.badge--info {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+.badge--gray {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-600);
+}
+
+/* Solid Variants */
+.badge--solid.badge--primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.badge--solid.badge--secondary {
+    background-color: var(--color-gray-700);
+    color: var(--color-white);
+}
+
+.badge--solid.badge--success {
+    background-color: var(--color-success);
+    color: var(--color-white);
+}
+
+.badge--solid.badge--warning {
+    background-color: var(--color-warning);
+    color: var(--color-gray-900);
+}
+
+.badge--solid.badge--error {
+    background-color: var(--color-error);
+    color: var(--color-white);
+}
+
+.badge--solid.badge--info {
+    background-color: var(--color-info);
+    color: var(--color-white);
+}
+
+/* Outline Variants */
+.badge--outline {
+    background-color: transparent;
+    border: 1px solid currentColor;
+}
+
+.badge--outline.badge--primary {
+    color: var(--color-primary);
+}
+
+.badge--outline.badge--success {
+    color: var(--color-success);
+}
+
+.badge--outline.badge--warning {
+    color: var(--color-warning);
+}
+
+.badge--outline.badge--error {
+    color: var(--color-error);
+}
+
+.badge--outline.badge--info {
+    color: var(--color-info);
+}
+
+/* With Icon */
+.badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+}
+
+.badge--lg .badge-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Dot Badge */
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+}
+
+.badge-dot--primary {
+    background-color: var(--color-primary);
+}
+
+.badge-dot--success {
+    background-color: var(--color-success);
+}
+
+.badge-dot--warning {
+    background-color: var(--color-warning);
+}
+
+.badge-dot--error {
+    background-color: var(--color-error);
+}
+
+/* Pulse Animation */
+.badge-dot--pulse {
+    animation: pulse 2s ease-in-out infinite;
+}

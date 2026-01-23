@@ -1,0 +1,256 @@
+/* ============================================
+   ENSPY COURSES PORTAL - Login Page Styles
+   ============================================ */
+
+.login-page {
+    min-height: 100vh;
+    background-color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.login-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
+    overflow: hidden;
+}
+
+/* Header */
+.login-header {
+    text-align: center;
+    padding: var(--spacing-8);
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-900);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-4);
+    background-color: var(--color-white);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.login-title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-2);
+}
+
+.login-subtitle {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+}
+
+/* Body */
+.login-body {
+    padding: var(--spacing-8);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.login-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+}
+
+.login-input {
+    padding: var(--spacing-4);
+    font-size: var(--font-size-base);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.login-input::placeholder {
+    color: var(--color-gray-400);
+}
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+}
+
+.login-remember {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-gray-600);
+    cursor: pointer;
+}
+
+.login-remember input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+}
+
+.login-forgot {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+}
+
+.login-forgot:hover {
+    text-decoration: underline;
+}
+
+.login-submit {
+    width: 100%;
+    padding: var(--spacing-4);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.login-submit:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.login-submit:active {
+    transform: translateY(0);
+}
+
+/* Divider */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin: var(--spacing-6) 0;
+}
+
+.login-divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-gray-200);
+}
+
+.login-divider-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+}
+
+/* Social Login */
+.login-social {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.login-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    padding: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    background-color: var(--color-white);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.login-social-btn:hover {
+    background-color: var(--color-gray-50);
+    border-color: var(--color-gray-300);
+}
+
+/* Footer */
+.login-footer {
+    text-align: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-gray-50);
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.login-footer-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+.login-footer-link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+}
+
+.login-footer-link:hover {
+    text-decoration: underline;
+}
+
+/* Back Link */
+.login-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-6);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-400);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.login-back:hover {
+    color: var(--color-white);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .login-page {
+        padding: var(--spacing-4);
+        align-items: flex-start;
+        padding-top: var(--spacing-12);
+    }
+
+    .login-header,
+    .login-body {
+        padding: var(--spacing-6);
+    }
+}

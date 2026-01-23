@@ -1,0 +1,239 @@
+/* ============================================
+   ENSPY COURSES PORTAL - CourseGrid Styles
+   ============================================ */
+
+.course-grid-container {
+    flex: 1;
+}
+
+/* Header */
+.course-grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-6);
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+}
+
+.course-grid-count {
+    font-size: var(--font-size-lg);
+    color: var(--color-gray-700);
+}
+
+.course-grid-count strong {
+    color: var(--color-gray-900);
+    font-weight: var(--font-weight-bold);
+}
+
+.course-grid-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+/* Sort Select */
+.course-grid-sort {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.course-grid-sort-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    white-space: nowrap;
+}
+
+.course-grid-sort-select {
+    padding: var(--spacing-2) var(--spacing-8) var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23757575' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-2) center;
+    background-size: 16px;
+}
+
+.course-grid-sort-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* View Toggle */
+.course-grid-view-toggle {
+    display: flex;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.course-grid-view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-gray-500);
+    transition: all var(--transition-fast);
+}
+
+.course-grid-view-btn:first-child {
+    border-right: 1px solid var(--color-gray-300);
+}
+
+.course-grid-view-btn:hover {
+    color: var(--color-gray-700);
+    background-color: var(--color-gray-50);
+}
+
+.course-grid-view-btn--active {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+}
+
+/* Grid */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-6);
+}
+
+.course-grid--list {
+    grid-template-columns: 1fr;
+}
+
+/* Empty State */
+.course-grid-empty {
+    text-align: center;
+    padding: var(--spacing-16) var(--spacing-4);
+}
+
+.course-grid-empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-6);
+    color: var(--color-gray-300);
+}
+
+.course-grid-empty-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.course-grid-empty-text {
+    font-size: var(--font-size-base);
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-6);
+}
+
+/* Pagination */
+.course-grid-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-8);
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.course-grid-pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--spacing-3);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.course-grid-pagination-btn:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.course-grid-pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.course-grid-pagination-btn--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.course-grid-pagination-btn--active:hover {
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+}
+
+.course-grid-pagination-ellipsis {
+    color: var(--color-gray-400);
+    padding: 0 var(--spacing-2);
+}
+
+/* Error State */
+.course-grid-error {
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-4);
+    background-color: #FFEBEE;
+    border-radius: var(--radius-xl);
+}
+
+.course-grid-error-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--spacing-4);
+    color: var(--color-error);
+}
+
+.course-grid-error-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-error);
+    margin-bottom: var(--spacing-2);
+}
+
+.course-grid-error-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-4);
+}
+
+@media (max-width: 768px) {
+    .course-grid-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .course-grid-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .course-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-grid-view-toggle {
+        display: none;
+    }
+}

@@ -1,0 +1,116 @@
+/* ============================================
+   ENSPY COURSES PORTAL - Language Selector Styles
+   ============================================ */
+
+.language-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.language-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    background-color: var(--color-white);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.language-button:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-gray-50);
+}
+
+.language-flag {
+    display: flex;
+    align-items: center;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.language-code {
+    font-weight: var(--font-weight-semibold);
+}
+
+.language-chevron {
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-fast);
+    color: var(--color-gray-500);
+}
+
+.language-chevron--open {
+    transform: rotate(180deg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: calc(100% + var(--spacing-2));
+    right: 0;
+    min-width: 150px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    padding: var(--spacing-2);
+    margin: 0;
+    z-index: 1000;
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.language-dropdown li {
+    margin: 0;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-700);
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.language-option:hover {
+    background-color: var(--color-gray-100);
+}
+
+.language-option--active {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary);
+}
+
+.language-option--active:hover {
+    background-color: var(--color-primary-100);
+}
+
+.language-label {
+    flex: 1;
+    text-align: left;
+}
