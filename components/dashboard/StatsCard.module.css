@@ -1,0 +1,115 @@
+/* StatsCard Component Styles */
+
+.card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--neutral-200);
+    transition: all var(--transition-normal);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Icon wrapper */
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+/* Variantes d'icônes */
+.default .iconWrapper {
+    background: var(--neutral-100);
+    color: var(--neutral-600);
+}
+
+.primary .iconWrapper {
+    background: var(--primary-100);
+    color: var(--primary-600);
+}
+
+.secondary .iconWrapper {
+    background: var(--secondary-100);
+    color: var(--secondary-600);
+}
+
+.success .iconWrapper {
+    background: var(--success-100);
+    color: var(--success-600);
+}
+
+.warning .iconWrapper {
+    background: var(--warning-100);
+    color: var(--warning-600);
+}
+
+/* Content */
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    flex: 1;
+}
+
+.title {
+    font-size: var(--font-size-sm);
+    color: var(--neutral-500);
+    font-weight: var(--font-weight-medium);
+}
+
+.value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--neutral-900);
+    line-height: 1.2;
+}
+
+/* Trend */
+.trend {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.trend.positive {
+    color: var(--success-600);
+}
+
+.trend.negative {
+    color: var(--error-600);
+}
+
+.trendLabel {
+    color: var(--neutral-500);
+    font-weight: var(--font-weight-normal);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .card {
+        padding: var(--spacing-md);
+    }
+
+    .iconWrapper {
+        width: 40px;
+        height: 40px;
+    }
+
+    .value {
+        font-size: var(--font-size-xl);
+    }
+}

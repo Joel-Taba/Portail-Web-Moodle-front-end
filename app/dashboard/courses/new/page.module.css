@@ -1,0 +1,41 @@
+/* New/Edit Course Page Styles */
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) 0;
+    background: transparent;
+    border: none;
+    color: var(--neutral-500);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    margin-bottom: var(--spacing-md);
+}
+
+.backButton:hover {
+    color: var(--primary-500);
+}
+
+.title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--neutral-900);
+    margin: 0;
+}
+
+.subtitle {
+    font-size: var(--font-size-base);
+    color: var(--neutral-500);
+    margin: var(--spacing-xs) 0 0 0;
+}
