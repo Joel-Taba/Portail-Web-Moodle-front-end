@@ -1,16 +1,17 @@
 /* ============================================
    Super Admin Interface Styles
+   Couleurs ENSPY: Orange (#E65100), Blanc, Noir
    ============================================ */
 
 /* Layout */
 .superadmin-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
   color: #fff;
 }
 
 .superadmin-header {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem 2rem;
@@ -28,12 +29,13 @@
 .superadmin-logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #E65100 0%, #FF8A50 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  color: #fff;
 }
 
 .superadmin-logo-text {
@@ -42,7 +44,7 @@
 }
 
 .superadmin-logo-text span {
-  color: #e94560;
+  color: #E65100;
 }
 
 .superadmin-user {
@@ -52,17 +54,20 @@
 }
 
 .superadmin-logout {
-  background: rgba(233, 69, 96, 0.2);
-  border: 1px solid #e94560;
-  color: #e94560;
+  background: rgba(230, 81, 0, 0.2);
+  border: 1px solid #E65100;
+  color: #FF8A50;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .superadmin-logout:hover {
-  background: #e94560;
+  background: #E65100;
   color: #fff;
 }
 
@@ -91,19 +96,20 @@
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(233, 69, 96, 0.2);
+  box-shadow: 0 10px 40px rgba(230, 81, 0, 0.2);
 }
 
 .stat-card-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #E65100 0%, #FF8A50 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
   font-size: 1.5rem;
+  color: #fff;
 }
 
 .stat-card-value {
@@ -140,7 +146,7 @@
 }
 
 .btn-add-admin {
-  background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #E65100 0%, #FF8A50 100%);
   border: none;
   color: #fff;
   padding: 0.75rem 1.5rem;
@@ -155,7 +161,7 @@
 
 .btn-add-admin:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+  box-shadow: 0 5px 20px rgba(230, 81, 0, 0.4);
 }
 
 /* Admin Table */
@@ -192,13 +198,14 @@
 .admin-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #E65100 0%, #FF8A50 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 1rem;
+  color: #fff;
 }
 
 .admin-name {
@@ -223,18 +230,18 @@
 }
 
 .status-active {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  background: rgba(76, 175, 80, 0.2);
+  color: #81C784;
 }
 
 .status-suspended {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(244, 67, 54, 0.2);
+  color: #E57373;
 }
 
 .status-pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  background: rgba(255, 193, 7, 0.2);
+  color: #FFD54F;
 }
 
 /* Action Buttons */
@@ -255,42 +262,42 @@
 }
 
 .btn-view {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  background: rgba(33, 150, 243, 0.2);
+  color: #64B5F6;
 }
 
 .btn-view:hover {
-  background: #3b82f6;
+  background: #2196F3;
   color: #fff;
 }
 
 .btn-suspend {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  background: rgba(255, 193, 7, 0.2);
+  color: #FFD54F;
 }
 
 .btn-suspend:hover {
-  background: #f59e0b;
-  color: #fff;
+  background: #FFC107;
+  color: #000;
 }
 
 .btn-delete {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(244, 67, 54, 0.2);
+  color: #E57373;
 }
 
 .btn-delete:hover {
-  background: #ef4444;
+  background: #F44336;
   color: #fff;
 }
 
 .btn-activate {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  background: rgba(76, 175, 80, 0.2);
+  color: #81C784;
 }
 
 .btn-activate:hover {
-  background: #10b981;
+  background: #4CAF50;
   color: #fff;
 }
 
@@ -301,7 +308,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -311,12 +318,17 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 2rem;
@@ -332,6 +344,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -365,7 +378,7 @@
 }
 
 .modal-close:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(244, 67, 54, 0.3);
 }
 
 /* Form */
@@ -393,8 +406,8 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #e94560;
-  box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+  border-color: #E65100;
+  box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
 }
 
 .form-input::placeholder {
@@ -409,7 +422,7 @@
 
 .btn-submit {
   flex: 1;
-  background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+  background: linear-gradient(135deg, #E65100 0%, #FF8A50 100%);
   border: none;
   color: #fff;
   padding: 0.875rem;
@@ -421,7 +434,7 @@
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+  box-shadow: 0 5px 20px rgba(230, 81, 0, 0.4);
 }
 
 .btn-submit:disabled {
@@ -508,12 +521,13 @@
   width: 64px;
   height: 64px;
   margin: 0 auto 1rem;
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(244, 67, 54, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+  color: #E57373;
 }
 
 .confirm-message {
