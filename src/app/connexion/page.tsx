@@ -1,6 +1,6 @@
 /* ============================================
    ENSPY COURSES PORTAL - Login Page
-   Connexion unifiée pour Étudiants, Admin et Super Admin
+   Connexion unifiée avec détection automatique du rôle
    ============================================ */
 
 'use client';
@@ -34,33 +34,17 @@ const EyeOffIcon = () => (
     </svg>
 );
 
-const UserIcon = () => (
+const LockIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
 );
 
-const ShieldIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-);
-
-const CrownIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
-        <path d="M3 20h18" />
-    </svg>
-);
-
-// Types d'utilisateurs
-type UserType = 'etudiant' | 'admin' | 'superadmin';
-
-// Identifiants de test
-const TEST_CREDENTIALS = {
-    superadmin: { email: 'superadmin@enspy.cm', password: 'superadmin123' },
-    admin: { email: 'admin@enspy.cm', password: 'admin123' },
+// Identifiants administrateurs (en production, ceci serait géré côté backend)
+const ADMIN_CREDENTIALS = {
+    'superadmin@enspy.cm': { password: 'superadmin123', role: 'superadmin', redirect: '/superadmin' },
+    'admin@enspy.cm': { password: 'admin123', role: 'admin', redirect: '/dashboard' },
 };
 
 export default function LoginPage() {
@@ -72,7 +56,6 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [userType, setUserType] = useState<UserType>('etudiant');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,62 +70,46 @@ export default function LoginPage() {
         }
 
         try {
-            // Vérification Super Admin
-            if (email === TEST_CREDENTIALS.superadmin.email &&
-                password === TEST_CREDENTIALS.superadmin.password) {
-                localStorage.setItem('superadmin_token', 'simulated_token');
-                localStorage.setItem('superadmin_user', JSON.stringify({
+            // 1. Vérifier si c'est un compte administrateur (Super Admin ou Admin)
+            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
+
+            if (adminAccount && adminAccount.password === password) {
+                // Connexion Admin/Super Admin réussie
+                const storageKey = adminAccount.role === 'superadmin' ? 'superadmin_token' : 'admin_token';
+                const userKey = adminAccount.role === 'superadmin' ? 'superadmin_user' : 'admin_user';
+
+                localStorage.setItem(storageKey, 'simulated_token_' + Date.now());
+                localStorage.setItem(userKey, JSON.stringify({
                     email: email,
-                    name: 'Super Administrateur',
-                    role: 'superadmin'
+                    role: adminAccount.role,
+                    loginTime: new Date().toISOString()
                 }));
-                router.push('/superadmin');
+
+                router.push(adminAccount.redirect);
                 return;
             }
 
-            // Vérification Admin
-            if (email === TEST_CREDENTIALS.admin.email &&
-                password === TEST_CREDENTIALS.admin.password) {
-                localStorage.setItem('admin_token', 'simulated_token');
-                localStorage.setItem('admin_user', JSON.stringify({
-                    email: email,
-                    name: 'Administrateur',
-                    role: 'admin'
-                }));
-                router.push('/dashboard');
-                return;
-            }
-
-            // Connexion Étudiant via API
+            // 2. Si ce n'est pas un admin, tenter la connexion étudiant via API
             const response = await api.auth.login({ email, password });
 
             if (response.success) {
                 localStorage.setItem('user', JSON.stringify(response.data.etudiant));
+                localStorage.setItem('user_token', 'student_token_' + Date.now());
                 window.location.href = '/';
             } else {
                 setError(response.error || 'Identifiants incorrects');
             }
         } catch {
-            // Si l'API échoue, on vérifie quand même les credentials de test
-            setError('Identifiants incorrects ou serveur indisponible');
+            // Si l'API échoue et que ce n'est pas un admin connu
+            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
+            if (adminAccount) {
+                // C'est un email admin mais mauvais mot de passe
+                setError('Identifiants incorrects');
+            } else {
+                setError('Identifiants incorrects ou serveur indisponible');
+            }
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const getUserTypeLabel = () => {
-        switch (userType) {
-            case 'superadmin': return 'Super Administrateur';
-            case 'admin': return 'Administrateur';
-            default: return 'Étudiant';
-        }
-    };
-
-    const getUserTypeIcon = () => {
-        switch (userType) {
-            case 'superadmin': return <CrownIcon />;
-            case 'admin': return <ShieldIcon />;
-            default: return <UserIcon />;
         }
     };
 
@@ -157,50 +124,17 @@ export default function LoginPage() {
                         </div>
                         <h1 className={styles['login-title']}>{t('login.title') || 'Connexion'}</h1>
                         <p className={styles['login-subtitle']}>
-                            {t('login.subtitle') || 'Accédez à votre espace personnel'}
+                            {t('login.subtitle') || 'Accédez à votre espace ENSPY'}
                         </p>
-                    </div>
-
-                    {/* User Type Selector */}
-                    <div className={styles['login-type-selector']}>
-                        <button
-                            type="button"
-                            className={`${styles['login-type-btn']} ${userType === 'etudiant' ? styles['login-type-active'] : ''}`}
-                            onClick={() => setUserType('etudiant')}
-                        >
-                            <UserIcon />
-                            <span>Étudiant</span>
-                        </button>
-                        <button
-                            type="button"
-                            className={`${styles['login-type-btn']} ${userType === 'admin' ? styles['login-type-active'] : ''}`}
-                            onClick={() => setUserType('admin')}
-                        >
-                            <ShieldIcon />
-                            <span>Admin</span>
-                        </button>
-                        <button
-                            type="button"
-                            className={`${styles['login-type-btn']} ${userType === 'superadmin' ? styles['login-type-active'] : ''}`}
-                            onClick={() => setUserType('superadmin')}
-                        >
-                            <CrownIcon />
-                            <span>Super Admin</span>
-                        </button>
                     </div>
 
                     {/* Body */}
                     <div className={styles['login-body']}>
-                        <div className={styles['login-user-badge']}>
-                            {getUserTypeIcon()}
-                            <span>Connexion {getUserTypeLabel()}</span>
-                        </div>
-
                         <form className={styles['login-form']} onSubmit={handleSubmit}>
                             {/* Email Field */}
                             <div className={styles['login-field']}>
                                 <label htmlFor="email" className={styles['login-label']}>
-                                    {t('login.email') || 'Email'}
+                                    {t('login.email') || 'Adresse email'}
                                 </label>
                                 <input
                                     type="email"
@@ -211,6 +145,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     autoComplete="email"
+                                    disabled={isLoading}
                                 />
                             </div>
 
@@ -219,23 +154,24 @@ export default function LoginPage() {
                                 <label htmlFor="password" className={styles['login-label']}>
                                     {t('login.password') || 'Mot de passe'}
                                 </label>
-                                <div style={{ position: 'relative' }}>
+                                <div className={styles['login-input-wrapper']}>
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         id="password"
                                         className={styles['login-input']}
-                                        style={{ paddingRight: '48px', width: '100%' }}
                                         placeholder={t('login.passwordPlaceholder') || '••••••••'}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         autoComplete="current-password"
+                                        disabled={isLoading}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className={styles['login-password-toggle']}
                                         aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                                        disabled={isLoading}
                                     >
                                         {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                                     </button>
@@ -249,6 +185,7 @@ export default function LoginPage() {
                                         type="checkbox"
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
+                                        disabled={isLoading}
                                     />
                                     {t('login.rememberMe') || 'Se souvenir de moi'}
                                 </label>
@@ -260,11 +197,7 @@ export default function LoginPage() {
                             {/* Error Message */}
                             {error && (
                                 <div className={styles['login-error']}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="12" y1="8" x2="12" y2="12" />
-                                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                                    </svg>
+                                    <LockIcon />
                                     {error}
                                 </div>
                             )}
@@ -278,45 +211,24 @@ export default function LoginPage() {
                                 {isLoading ? (
                                     <>
                                         <span className={styles['login-spinner']}></span>
-                                        Connexion...
+                                        Connexion en cours...
                                     </>
                                 ) : (
                                     t('login.submit') || 'Se connecter'
                                 )}
                             </button>
                         </form>
-
-                        {/* Test Credentials Info */}
-                        {(userType === 'admin' || userType === 'superadmin') && (
-                            <div className={styles['login-demo-info']}>
-                                <p>🔐 <strong>Identifiants de test :</strong></p>
-                                {userType === 'superadmin' && (
-                                    <>
-                                        <code>superadmin@enspy.cm</code>
-                                        <code>superadmin123</code>
-                                    </>
-                                )}
-                                {userType === 'admin' && (
-                                    <>
-                                        <code>admin@enspy.cm</code>
-                                        <code>admin123</code>
-                                    </>
-                                )}
-                            </div>
-                        )}
                     </div>
 
-                    {/* Footer - Only for students */}
-                    {userType === 'etudiant' && (
-                        <div className={styles['login-footer']}>
-                            <p className={styles['login-footer-text']}>
-                                {t('login.noAccount') || "Vous n'avez pas de compte ?"}{' '}
-                                <Link href="/inscription" className={styles['login-footer-link']}>
-                                    {t('login.registerLink') || "S'inscrire"}
-                                </Link>
-                            </p>
-                        </div>
-                    )}
+                    {/* Footer */}
+                    <div className={styles['login-footer']}>
+                        <p className={styles['login-footer-text']}>
+                            {t('login.noAccount') || "Vous n'avez pas de compte ?"}{' '}
+                            <Link href="/inscription" className={styles['login-footer-link']}>
+                                {t('login.registerLink') || "S'inscrire"}
+                            </Link>
+                        </p>
+                    </div>
                 </div>
 
                 {/* Back Link */}

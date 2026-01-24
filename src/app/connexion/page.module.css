@@ -1,6 +1,7 @@
 /* ============================================
    ENSPY COURSES PORTAL - Login Page Styles
    Couleurs ENSPY: Orange (#E65100), Blanc, Noir
+   Formulaire simplifié sans sélecteur de type
    ============================================ */
 
 .login-page {
@@ -24,9 +25,20 @@
     pointer-events: none;
 }
 
+.login-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -20%;
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(230, 81, 0, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
 .login-container {
     width: 100%;
-    max-width: 480px;
+    max-width: 440px;
     position: relative;
     z-index: 10;
 }
@@ -41,7 +53,7 @@
 /* Header */
 .login-header {
     text-align: center;
-    padding: var(--spacing-8);
+    padding: var(--spacing-8) var(--spacing-8) var(--spacing-6);
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     color: var(--color-white);
 }
@@ -55,7 +67,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 12px;
     box-shadow: 0 10px 25px rgba(230, 81, 0, 0.3);
 }
 
@@ -70,67 +82,6 @@
 .login-subtitle {
     font-size: var(--font-size-sm);
     color: rgba(255, 255, 255, 0.7);
-}
-
-/* User Type Selector */
-.login-type-selector {
-    display: flex;
-    background-color: var(--color-gray-100);
-    padding: var(--spacing-2);
-    gap: var(--spacing-2);
-}
-
-.login-type-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-1);
-    padding: var(--spacing-3) var(--spacing-2);
-    background: transparent;
-    border: 2px solid transparent;
-    border-radius: var(--radius-lg);
-    color: var(--color-gray-500);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.login-type-btn:hover {
-    background-color: var(--color-white);
-    color: var(--color-gray-700);
-}
-
-.login-type-active {
-    background-color: var(--color-white);
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-}
-
-.login-type-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* User Badge */
-.login-user-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-3);
-    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
-    border-radius: var(--radius-lg);
-    color: var(--color-primary-dark);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    margin-bottom: var(--spacing-5);
-}
-
-.login-user-badge svg {
-    color: var(--color-primary);
 }
 
 /* Body */
@@ -156,7 +107,12 @@
     color: var(--color-gray-700);
 }
 
+.login-input-wrapper {
+    position: relative;
+}
+
 .login-input {
+    width: 100%;
     padding: var(--spacing-4);
     font-size: var(--font-size-base);
     border: 2px solid var(--color-gray-200);
@@ -175,6 +131,15 @@
     color: var(--color-gray-400);
 }
 
+.login-input:disabled {
+    background-color: var(--color-gray-100);
+    cursor: not-allowed;
+}
+
+.login-input-wrapper .login-input {
+    padding-right: 48px;
+}
+
 .login-password-toggle {
     position: absolute;
     right: 12px;
@@ -191,8 +156,12 @@
     transition: color var(--transition-fast);
 }
 
-.login-password-toggle:hover {
+.login-password-toggle:hover:not(:disabled) {
     color: var(--color-primary);
+}
+
+.login-password-toggle:disabled {
+    cursor: not-allowed;
 }
 
 .login-options {
@@ -217,6 +186,10 @@
     cursor: pointer;
 }
 
+.login-remember input:disabled {
+    cursor: not-allowed;
+}
+
 .login-forgot {
     color: var(--color-primary);
     text-decoration: none;
@@ -233,8 +206,8 @@
 .login-error {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-3) var(--spacing-4);
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
     background-color: #FFEBEE;
     border: 1px solid #FFCDD2;
     border-radius: var(--radius-lg);
@@ -244,12 +217,13 @@
 
 .login-error svg {
     flex-shrink: 0;
+    color: #E53935;
 }
 
 /* Submit Button */
 .login-submit {
     width: 100%;
-    padding: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-6);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
@@ -275,8 +249,9 @@
 }
 
 .login-submit:disabled {
-    opacity: 0.7;
+    opacity: 0.8;
     cursor: not-allowed;
+    transform: none;
 }
 
 /* Spinner */
@@ -293,34 +268,6 @@
     to {
         transform: rotate(360deg);
     }
-}
-
-/* Demo Info */
-.login-demo-info {
-    margin-top: var(--spacing-5);
-    padding: var(--spacing-4);
-    background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-gray-100) 100%);
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-lg);
-    text-align: center;
-}
-
-.login-demo-info p {
-    color: var(--color-gray-600);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-2);
-}
-
-.login-demo-info code {
-    display: block;
-    background: var(--color-white);
-    padding: var(--spacing-2) var(--spacing-3);
-    border-radius: var(--radius-md);
-    margin-top: var(--spacing-2);
-    color: var(--color-primary);
-    font-family: monospace;
-    font-size: var(--font-size-sm);
-    border: 1px solid var(--color-gray-200);
 }
 
 /* Footer */
@@ -377,12 +324,12 @@
         padding: var(--spacing-6);
     }
 
-    .login-type-selector {
-        flex-direction: column;
+    .login-logo {
+        width: 70px;
+        height: 70px;
     }
 
-    .login-type-btn {
-        flex-direction: row;
-        justify-content: center;
+    .login-title {
+        font-size: var(--font-size-xl);
     }
 }
