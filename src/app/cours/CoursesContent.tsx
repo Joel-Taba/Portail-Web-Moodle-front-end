@@ -43,18 +43,18 @@ function transformCourseFromBackend(backendCourse: BackendCours): Course {
     return {
         id: String(backendCourse.id),
         title: backendCourse.titre,
-        slug: backendCourse.titre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-        description: backendCourse.description || '',
-        synopsis: backendCourse.synopsis || '',
-        imageUrl: '/images/course-placeholder.jpg', // Default placeholder
+        slug: backendCourse.slug || backendCourse.titre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+        description: backendCourse.synopsisCourt || '',
+        synopsis: backendCourse.synopsisCourt || '',
+        imageUrl: `https://picsum.photos/seed/${backendCourse.id}/400/250`,
         videoUrl: backendCourse.medias?.find(m => m.type === 'VIDEO')?.url,
-        duration: backendCourse.dureeEstimee <= 2 ? '0-2h' :
-            backendCourse.dureeEstimee <= 5 ? '2-5h' :
-                backendCourse.dureeEstimee <= 10 ? '5-10h' : '10h+',
+        duration: backendCourse.dureeTotaleMinutes <= 120 ? '0-2h' :
+            backendCourse.dureeTotaleMinutes <= 300 ? '2-5h' :
+                backendCourse.dureeTotaleMinutes <= 600 ? '5-10h' : '10h+',
         level: mapLevel(backendCourse.niveau),
         format: 'mixed',
-        language: backendCourse.langue?.toLowerCase() === 'anglais' ? 'en' : 'fr',
-        type: 'free',
+        language: backendCourse.langue === 'EN' ? 'en' : 'fr',
+        type: backendCourse.estCertifiant ? 'certified' : 'free',
         availability: backendCourse.statut === 'PUBLIE' ? 'available' :
             backendCourse.statut === 'ARCHIVE' ? 'archived' : 'upcoming',
         objectives: backendCourse.objectifsPedagogiques?.split('\n').filter(Boolean) || [],
@@ -63,16 +63,16 @@ function transformCourseFromBackend(backendCourse: BackendCours): Course {
         syllabus: [],
         instructor: {
             id: String(backendCourse.instructeur?.id || '0'),
-            firstName: backendCourse.instructeur?.prenom || '',
-            lastName: backendCourse.instructeur?.nom || '',
-            email: backendCourse.instructeur?.email || '',
+            firstName: backendCourse.instructeur?.nomComplet || '',
+            lastName: '',
+            email: '',
             photoUrl: '/images/instructor-placeholder.jpg',
-            bio: backendCourse.instructeur?.bio || '',
-            expertise: [backendCourse.instructeur?.specialite || ''],
-            title: backendCourse.instructeur?.specialite || '',
+            bio: backendCourse.instructeur?.biographieCourte || '',
+            expertise: [backendCourse.instructeur?.titreProfessionnel || ''],
+            title: backendCourse.instructeur?.titreProfessionnel || '',
             institution: {
                 id: '1',
-                name: backendCourse.instructeur?.institution || 'ENSPY',
+                name: backendCourse.instructeur?.organisation || 'ENSPY',
                 shortName: 'ENSPY',
                 logoUrl: '/images/logo-enspy.png',
                 description: '',

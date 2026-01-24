@@ -94,15 +94,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
                 {/* Badges */}
                 <div className={styles['course-card-badges']}>
-                    <span className={cn(
-                        styles['course-card-badge'],
-                        styles[`course-card-badge--type-${course.type}`]
-                    )}>
-                        {getTypeLabel(course.type)}
-                    </span>
-                    {course.isTrending && (
-                        <span className={cn(styles['course-card-badge'], styles['course-card-badge--trending'])}>
-                            <TrendingIcon /> Tendance
+                    {course.type === 'certified' && (
+                        <span className={cn(
+                            styles['course-card-badge'],
+                            styles['course-card-badge--type-certified']
+                        )}>
+                            Certifiant
                         </span>
                     )}
                     {course.availability === 'upcoming' && (

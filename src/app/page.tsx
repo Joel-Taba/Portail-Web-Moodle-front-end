@@ -80,7 +80,7 @@ function transformCourse(backendCourse: BackendCours): Course {
     slug: backendCourse.slug,
     description: backendCourse.synopsisCourt || '',
     synopsis: backendCourse.synopsisCourt || '',
-    imageUrl: '/images/course-placeholder.jpg',
+    imageUrl: `https://picsum.photos/seed/${backendCourse.id}/400/250`,
     duration: backendCourse.dureeTotaleMinutes <= 120 ? '0-2h' :
       backendCourse.dureeTotaleMinutes <= 300 ? '2-5h' :
         backendCourse.dureeTotaleMinutes <= 600 ? '5-10h' : '10h+',
