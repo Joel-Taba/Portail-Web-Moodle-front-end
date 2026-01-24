@@ -54,163 +54,92 @@ export interface CourseCardProps {
     className?: string;
 }
 
+const BuildingIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+        <path d="M9 22v-4h6v4"></path>
+        <path d="M8 6h.01"></path>
+        <path d="M16 6h.01"></path>
+        <path d="M8 10h.01"></path>
+        <path d="M16 10h.01"></path>
+        <path d="M8 14h.01"></path>
+        <path d="M16 14h.01"></path>
+    </svg>
+);
+
+const IDIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2z"></path>
+        <path d="M7 11h8"></path>
+        <path d="M7 15h5"></path>
+        <path d="M7 7h1"></path>
+    </svg>
+);
+
+const CalendarIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+);
+
 export const CourseCard: React.FC<CourseCardProps> = ({
     course,
-    variant = 'default',
-    showInstructor = true,
-    showRating = true,
-    showEnrollment = true,
     className,
 }) => {
-    const getInitials = (firstName: string, lastName: string) => {
-        return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    };
-
-    const formatEnrollment = (count: number) => {
-        if (count >= 1000) {
-            return `${(count / 1000).toFixed(1)}k`;
-        }
-        return count.toString();
-    };
-
     return (
-        <article
-            className={cn(
-                styles['course-card'],
-                variant === 'horizontal' && styles['course-card--horizontal'],
-                className
-            )}
-        >
-            {/* Image */}
-            <div className={styles['course-card-image']}>
-                {course.imageUrl ? (
-                    <img src={course.imageUrl} alt={course.title} loading="lazy" />
-                ) : (
-                    <div className={styles['course-card-image-placeholder']}>
-                        <BookIcon />
-                    </div>
-                )}
-                <div className={styles['course-card-overlay']} />
-
-                {/* Badges */}
-                <div className={styles['course-card-badges']}>
-                    {course.type === 'certified' && (
-                        <span className={cn(
-                            styles['course-card-badge'],
-                            styles['course-card-badge--type-certified']
-                        )}>
-                            Certifiant
-                        </span>
-                    )}
-                    {course.availability === 'upcoming' && (
-                        <span className={cn(
-                            styles['course-card-badge'],
-                            styles['course-card-badge--availability-upcoming']
-                        )}>
-                            À venir
-                        </span>
-                    )}
-                </div>
-
-                {/* Duration */}
-                <div className={styles['course-card-duration']}>
-                    <ClockIcon />
-                    <span>{getDurationLabel(course.duration)}</span>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className={styles['course-card-content']}>
-                {/* Institution */}
-                {course.institution && (
-                    <div className={styles['course-card-institution']}>
-                        {course.institution.logoUrl ? (
-                            <img
-                                src={course.institution.logoUrl}
-                                alt={course.institution.name}
-                                className={styles['course-card-institution-logo']}
-                            />
+        <article className={cn(styles['course-card'], className)}>
+            <Link href={getCourseUrl(course.slug)} className={styles['course-card-link']}>
+                {/* Image Part */}
+                <div className={styles['course-card-image-wrapper']}>
+                    <div className={styles['course-card-image']}>
+                        {course.imageUrl ? (
+                            <img src={course.imageUrl} alt={course.title} loading="lazy" />
                         ) : (
-                            <div
-                                className={styles['course-card-institution-logo']}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '10px',
-                                    fontWeight: 'bold',
-                                    color: 'var(--color-primary)',
-                                }}
-                            >
-                                {course.institution.shortName.charAt(0)}
+                            <div className={styles['course-card-image-placeholder']}>
+                                <BookIcon />
                             </div>
                         )}
-                        <span className={styles['course-card-institution-name']}>
-                            {course.institution.shortName}
-                        </span>
                     </div>
-                )}
 
-                {/* Title */}
-                <h3 className={styles['course-card-title']}>
-                    <Link href={getCourseUrl(course.slug)}>
+                    {/* Institution Logo Overlay */}
+                    <div className={styles['institution-logo-overlay']}>
+                        {course.institution?.logoUrl ? (
+                            <img src={course.institution.logoUrl} alt={course.institution.name} />
+                        ) : (
+                            <div className={styles['logo-placeholder']}>
+                                {course.institution?.shortName.charAt(0)}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Content Part */}
+                <div className={styles['course-card-content']}>
+                    <h3 className={styles['course-card-title']}>
                         {course.title}
-                    </Link>
-                </h3>
+                    </h3>
 
-                {/* Description */}
-                <p className={styles['course-card-description']}>
-                    {truncate(course.description, 120)}
-                </p>
-
-                {/* Meta */}
-                <div className={styles['course-card-meta']}>
-                    {showEnrollment && course.enrollmentCount > 0 && (
-                        <span className={styles['course-card-meta-item']}>
-                            <span className={styles['course-card-meta-icon']}><UsersIcon /></span>
-                            {formatEnrollment(course.enrollmentCount)} inscrits
-                        </span>
-                    )}
-                    {showRating && course.rating > 0 && (
-                        <span className={styles['course-card-rating']}>
-                            <span className={styles['course-card-rating-star']}><StarIcon /></span>
-                            <span className={styles['course-card-rating-value']}>{course.rating.toFixed(1)}</span>
-                            <span className={styles['course-card-rating-count']}>({course.reviewsCount})</span>
-                        </span>
-                    )}
-                </div>
-
-                {/* Footer */}
-                <div className={styles['course-card-footer']}>
-                    {/* Instructor */}
-                    {showInstructor && course.instructor && (
-                        <div className={styles['course-card-instructor']}>
-                            {course.instructor.photoUrl ? (
-                                <img
-                                    src={course.instructor.photoUrl}
-                                    alt={`${course.instructor.firstName} ${course.instructor.lastName}`}
-                                    className={styles['course-card-instructor-avatar']}
-                                />
-                            ) : (
-                                <div className={styles['course-card-instructor-avatar-placeholder']}>
-                                    {getInitials(course.instructor.firstName, course.instructor.lastName)}
-                                </div>
-                            )}
-                            <span className={styles['course-card-instructor-name']}>
-                                {course.instructor.firstName} {course.instructor.lastName}
-                            </span>
+                    <div className={styles['course-card-details']}>
+                        <div className={styles['detail-item']}>
+                            <BuildingIcon />
+                            <span>{course.institution?.name || course.institution?.shortName}</span>
                         </div>
-                    )}
-
-                    {/* Level */}
-                    <span className={cn(
-                        styles['course-card-level'],
-                        styles[`course-card-level--${course.level}`]
-                    )}>
-                        {getLevelLabel(course.level)}
-                    </span>
+                        <div className={styles['detail-item']}>
+                            <IDIcon />
+                            <span>{course.id.padStart(5, '0')}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                {/* Red Footer CTA */}
+                <div className={styles['course-card-footer-cta']}>
+                    <CalendarIcon />
+                    <span>Ouvert à l'inscription</span>
+                </div>
+            </Link>
         </article>
     );
 };

@@ -74,13 +74,17 @@ function transformCourse(backendCourse: BackendCours): Course {
     return 'beginner';
   };
 
+  // Find principal image
+  const principalImage = backendCourse.medias?.find(m => m.estPrincipal && m.type.startsWith('IMG'))
+    || backendCourse.medias?.find(m => m.type.startsWith('IMG'));
+
   return {
     id: String(backendCourse.id),
     title: backendCourse.titre,
     slug: backendCourse.slug,
     description: backendCourse.synopsisCourt || '',
     synopsis: backendCourse.synopsisCourt || '',
-    imageUrl: `https://picsum.photos/seed/${backendCourse.id}/400/250`,
+    imageUrl: principalImage ? principalImage.urlPublique : '/images/course-placeholder.jpg',
     duration: backendCourse.dureeTotaleMinutes <= 120 ? '0-2h' :
       backendCourse.dureeTotaleMinutes <= 300 ? '2-5h' :
         backendCourse.dureeTotaleMinutes <= 600 ? '5-10h' : '10h+',

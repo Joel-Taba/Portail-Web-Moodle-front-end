@@ -66,11 +66,15 @@ export interface BackendEtudiant {
 
 export interface BackendMedia {
     id: number;
+    coursId: number;
+    nomFichier: string;
+    urlPublique: string;
     type: string;
-    url: string;
-    titre: string;
-    description: string;
-    ordre: number;
+    tailleOctets: number;
+    dureeSecondes?: number;
+    dimensions?: string;
+    altText?: string;
+    estPrincipal: boolean;
     createdAt: string;
 }
 

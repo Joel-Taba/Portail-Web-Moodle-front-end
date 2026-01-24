@@ -40,14 +40,18 @@ function transformCourseFromBackend(backendCourse: BackendCours): Course {
         return 'beginner';
     };
 
+    // Find principal image
+    const principalImage = backendCourse.medias?.find(m => m.estPrincipal && m.type.startsWith('IMG'))
+        || backendCourse.medias?.find(m => m.type.startsWith('IMG'));
+
     return {
         id: String(backendCourse.id),
         title: backendCourse.titre,
         slug: backendCourse.slug || backendCourse.titre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
         description: backendCourse.synopsisCourt || '',
         synopsis: backendCourse.synopsisCourt || '',
-        imageUrl: `https://picsum.photos/seed/${backendCourse.id}/400/250`,
-        videoUrl: backendCourse.medias?.find(m => m.type === 'VIDEO')?.url,
+        imageUrl: principalImage ? principalImage.urlPublique : '/images/course-placeholder.jpg',
+        videoUrl: backendCourse.medias?.find(m => m.type.startsWith('VIDEO'))?.urlPublique,
         duration: backendCourse.dureeTotaleMinutes <= 120 ? '0-2h' :
             backendCourse.dureeTotaleMinutes <= 300 ? '2-5h' :
                 backendCourse.dureeTotaleMinutes <= 600 ? '5-10h' : '10h+',
