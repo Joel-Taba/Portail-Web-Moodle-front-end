@@ -1,0 +1,235 @@
+{
+    "common": {
+        "search": "Search for a course...",
+        "searchPlaceholder": "Search for a course, a topic...",
+        "searchButton": "Search",
+        "login": "Login",
+        "register": "Register",
+        "backToHome": "Back to home",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "retry": "Retry"
+    },
+    "nav": {
+        "home": "Home",
+        "courses": "Courses",
+        "thematics": "Topics",
+        "institutions": "Institutions",
+        "about": "About"
+    },
+    "header": {
+        "portalName": "Courses Portal",
+        "selectLanguage": "Language"
+    },
+    "home": {
+        "badge": "Official ENSPY Platform",
+        "title": "Train yourself for",
+        "titleHighlight": "excellence",
+        "titleEnd": "in engineering",
+        "description": "Access quality training provided by experts from the National Advanced School of Engineering of Yaoundé. Courses designed to train tomorrow's engineers.",
+        "exploreCourses": "Explore courses",
+        "learnMore": "Learn more",
+        "stats": {
+            "courses": "Available courses",
+            "instructors": "Instructors",
+            "students": "Students"
+        },
+        "certifications": "Certifications",
+        "certificationsDesc": "Officially recognized",
+        "thematics": {
+            "title": "Explore our topics",
+            "subtitle": "Discover our areas of expertise and find the path that matches your professional ambitions."
+        },
+        "trending": {
+            "title": "Trending courses",
+            "subtitle": "The most popular courses at the moment",
+            "viewAll": "View all courses"
+        },
+        "features": {
+            "title": "Why choose our platform?",
+            "quality": {
+                "title": "Quality content",
+                "description": "Courses created by recognized ENSPY experts"
+            },
+            "flexible": {
+                "title": "Flexible learning",
+                "description": "Learn at your own pace, wherever you are"
+            },
+            "certified": {
+                "title": "Recognized certifications",
+                "description": "Get certificates valued by employers"
+            }
+        },
+        "cta": {
+            "title": "Ready to start learning?",
+            "description": "Join thousands of learners and develop your skills today.",
+            "button": "Start now"
+        }
+    },
+    "courses": {
+        "pageTitle": "Find an online course",
+        "pageDescription": "Explore our catalog of courses and find the one that matches your learning goals.",
+        "breadcrumb": {
+            "home": "Home",
+            "courses": "Courses"
+        },
+        "filters": {
+            "title": "Filters",
+            "reset": "Reset",
+            "level": "Level",
+            "duration": "Duration",
+            "format": "Format",
+            "language": "Language",
+            "type": "Type",
+            "availability": "Availability"
+        },
+        "levels": {
+            "beginner": "Beginner",
+            "intermediate": "Intermediate",
+            "expert": "Expert"
+        },
+        "durations": {
+            "0-2h": "0 - 2 hours",
+            "2-5h": "2 - 5 hours",
+            "5-10h": "5 - 10 hours",
+            "10h+": "More than 10 hours"
+        },
+        "formats": {
+            "video": "Video",
+            "text": "Text",
+            "exercises": "Exercises",
+            "mixed": "Mixed"
+        },
+        "types": {
+            "free": "Free",
+            "paid": "Paid",
+            "certified": "Certified"
+        },
+        "availabilities": {
+            "available": "Available",
+            "upcoming": "Upcoming",
+            "archived": "Archived"
+        },
+        "results": "{count} course(s) found",
+        "noResults": {
+            "title": "No courses found",
+            "description": "Try changing your filters or search."
+        },
+        "sort": {
+            "relevance": "Relevance",
+            "date": "Date",
+            "popularity": "Popularity",
+            "rating": "Rating"
+        },
+        "card": {
+            "enrolled": "enrolled",
+            "trending": "Trending",
+            "by": "By"
+        }
+    },
+    "login": {
+        "title": "Login",
+        "subtitle": "Access your personal space and courses",
+        "email": "Email address",
+        "emailPlaceholder": "your.email@example.com",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "submit": "Log in",
+        "submitting": "Logging in...",
+        "noAccount": "Don't have an account?",
+        "registerLink": "Register",
+        "error": {
+            "required": "Please fill in all fields",
+            "backendNotConnected": "Login will be available once the backend is connected."
+        }
+    },
+    "register": {
+        "title": "Registration",
+        "subtitle": "Create your account to access courses",
+        "lastName": "Last name",
+        "lastNamePlaceholder": "KAMGA",
+        "firstName": "First name",
+        "firstNamePlaceholder": "Jean",
+        "email": "Email address",
+        "emailPlaceholder": "your.email@example.com",
+        "level": "Study level",
+        "levelPlaceholder": "Select",
+        "department": "Department / Field",
+        "departmentPlaceholder": "Select",
+        "password": "Password",
+        "passwordPlaceholder": "Minimum 8 characters",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Retype your password",
+        "passwordStrength": {
+            "label": "Password strength",
+            "weak": "Weak",
+            "medium": "Medium",
+            "strong": "Strong"
+        },
+        "terms": {
+            "text": "I accept the",
+            "conditions": "terms of use",
+            "and": "and the",
+            "privacy": "privacy policy",
+            "suffix": "of the ENSPY courses portal."
+        },
+        "newsletter": "I would like to receive emails about new courses and ENSPY news. (Optional)",
+        "submit": "Create my account",
+        "submitting": "Creating account...",
+        "hasAccount": "Already have an account?",
+        "loginLink": "Log in",
+        "success": "Your account has been created!",
+        "levels": {
+            "licence1": "Bachelor 1",
+            "licence2": "Bachelor 2",
+            "licence3": "Bachelor 3",
+            "master1": "Master 1",
+            "master2": "Master 2",
+            "doctorat": "Doctorate",
+            "professionnel": "Professional",
+            "autre": "Other"
+        },
+        "departments": {
+            "genie-info": "Computer Engineering",
+            "genie-civil": "Civil Engineering",
+            "genie-elec": "Electrical Engineering",
+            "genie-meca": "Mechanical Engineering",
+            "genie-indus": "Industrial Engineering",
+            "telecom": "Telecommunications",
+            "math-info": "Mathematics-Computer Science",
+            "autre": "Other"
+        },
+        "errors": {
+            "firstName": "First name is required",
+            "lastName": "Last name is required",
+            "email": "Email address is required",
+            "emailInvalid": "Email address is not valid",
+            "password": "Password is required",
+            "passwordLength": "Password must be at least 8 characters",
+            "confirmPassword": "Please confirm your password",
+            "passwordMismatch": "Passwords do not match",
+            "terms": "You must accept the terms of use"
+        }
+    },
+    "footer": {
+        "description": "Online courses platform of the National Advanced School of Engineering of Yaoundé.",
+        "navigation": "Navigation",
+        "resources": "Resources",
+        "help": "Help & FAQ",
+        "contact": "Contact",
+        "newsletter": {
+            "title": "Newsletter",
+            "description": "Receive the latest news and new courses",
+            "placeholder": "Your email",
+            "submit": "Subscribe"
+        },
+        "copyright": "© {year} ENSPY. All rights reserved.",
+        "links": {
+            "terms": "Terms of use",
+            "privacy": "Privacy policy",
+            "legal": "Legal notices"
+        }
+    }
+}

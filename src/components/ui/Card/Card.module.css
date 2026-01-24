@@ -1,0 +1,127 @@
+/* ============================================
+   ENSPY COURSES PORTAL - Card Styles
+   ============================================ */
+
+.card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+/* Variants */
+.card--elevated {
+    box-shadow: var(--shadow-md);
+}
+
+.card--elevated:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-4px);
+}
+
+.card--outlined {
+    border: 1px solid var(--color-gray-200);
+}
+
+.card--outlined:hover {
+    border-color: var(--color-primary-300);
+}
+
+.card--flat {
+    background-color: var(--color-gray-50);
+}
+
+.card--flat:hover {
+    background-color: var(--color-gray-100);
+}
+
+/* Clickable */
+.card--clickable {
+    cursor: pointer;
+}
+
+.card--clickable:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Padding */
+.card--padding-none {
+    padding: 0;
+}
+
+.card--padding-sm {
+    padding: var(--spacing-4);
+}
+
+.card--padding-md {
+    padding: var(--spacing-6);
+}
+
+.card--padding-lg {
+    padding: var(--spacing-8);
+}
+
+/* Card Image */
+.card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+.card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
+}
+
+.card-image-badge {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+}
+
+.card-image-actions {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+/* Card Header */
+.card-header {
+    padding: var(--spacing-4) var(--spacing-4) 0;
+}
+
+/* Card Body */
+.card-body {
+    padding: var(--spacing-4);
+}
+
+/* Card Footer */
+.card-footer {
+    padding: 0 var(--spacing-4) var(--spacing-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+}
+
+.card-footer--border {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--spacing-4);
+    margin-top: var(--spacing-4);
+}
