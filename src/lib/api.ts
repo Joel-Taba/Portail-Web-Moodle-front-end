@@ -469,6 +469,16 @@ export const authApi = {
     },
 
     /**
+     * Login administrator (Super Admin / Admin Standard)
+     */
+    async adminLogin(data: { email: string; password: string }): Promise<ApiResponse<any>> {
+        return fetchApi<any>('/auth/admin/login', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    /**
      * Register student
      */
     async register(data: any): Promise<ApiResponse<any>> {

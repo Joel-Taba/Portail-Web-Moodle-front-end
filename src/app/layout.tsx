@@ -3,23 +3,13 @@
    ============================================ */
 
 import type { Metadata } from 'next';
-import { Inter, Outfit } from 'next/font/google';
 import '@/styles/globals.css';
 import { Header, Footer } from '@/components/layout';
 import { SITE_CONFIG, SEO_CONFIG } from '@/lib/constants';
 import { Providers } from './providers';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  display: 'swap',
-});
+// Using CSS variables for fonts instead of next/font/google due to Turbopack compatibility
+const fontClass = 'font-sans';
 
 export const metadata: Metadata = {
   title: {
@@ -78,7 +68,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="fr">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

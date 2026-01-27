@@ -301,8 +301,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
               <span className={styles['info-item-label']}>Prix de l'inscription</span>
               <span className={styles['info-item-value']}>Accès gratuit</span>
 
-              <Button href={SITE_CONFIG.institution.website} external className={styles['enroll-button']}>
-                Je me connecte pour m'inscrire
+              <Button href="/inscription" className={styles['enroll-button']}>
+                S'inscrire
               </Button>
             </div>
           </div>

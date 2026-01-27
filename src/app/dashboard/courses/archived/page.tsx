@@ -7,11 +7,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { activityStorage } from '@/lib/storage';
 import { coursesApi } from '@/lib/api/coursesApi';
-import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui';
+import { Card, CardBody } from '@/components/ui';
 import {
     ArchiveIcon,
     UnarchiveIcon,
@@ -173,7 +173,7 @@ export default function ArchivedCoursesPage() {
             {filteredCourses.length > 0 ? (
                 <div className={styles.coursesList}>
                     {filteredCourses.map((course) => (
-                        <Card key={course.id} variant="default" className={styles.courseCard}>
+                        <Card key={course.id} variant="elevated" className={styles.courseCard}>
                             <div className={styles.courseCardContent}>
                                 {/* Thumbnail */}
                                 <div className={styles.thumbnail}>
@@ -216,7 +216,7 @@ export default function ArchivedCoursesPage() {
                                         <div className={styles.confirmDelete}>
                                             <span>Confirmer ?</span>
                                             <Button
-                                                variant="danger"
+                                                variant="primary"
                                                 size="sm"
                                                 onClick={() => handleDelete(course.id)}
                                             >
@@ -247,8 +247,8 @@ export default function ArchivedCoursesPage() {
                     ))}
                 </div>
             ) : (
-                <Card variant="default" className={styles.emptyState}>
-                    <CardContent>
+                <Card variant="elevated" className={styles.emptyState}>
+                    <CardBody>
                         <div className={styles.emptyStateContent}>
                             <ArchiveIcon size={48} />
                             <h3>Aucun cours archivé</h3>
@@ -263,7 +263,7 @@ export default function ArchivedCoursesPage() {
                                 </Button>
                             </Link>
                         </div>
-                    </CardContent>
+                    </CardBody>
                 </Card>
             )}
         </div>

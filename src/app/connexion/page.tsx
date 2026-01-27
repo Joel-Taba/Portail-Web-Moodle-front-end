@@ -41,12 +41,6 @@ const LockIcon = () => (
     </svg>
 );
 
-// Identifiants administrateurs (en production, ceci serait géré côté backend)
-const ADMIN_CREDENTIALS = {
-    'superadmin@enspy.cm': { password: 'superadmin123', role: 'superadmin', redirect: '/superadmin' },
-    'admin@enspy.cm': { password: 'admin123', role: 'admin', redirect: '/dashboard' },
-};
-
 export default function LoginPage() {
     const { t } = useLocale();
     const router = useRouter();
@@ -70,22 +64,18 @@ export default function LoginPage() {
         }
 
         try {
-            // 1. Vérifier si c'est un compte administrateur (Super Admin ou Admin)
-            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
+            // 1. Essayer d'abord la connexion administrateur via l'API
+            const adminResponse = await api.auth.adminLogin({ email, password });
 
-            if (adminAccount && adminAccount.password === password) {
-                // Connexion Admin/Super Admin réussie
-                const storageKey = adminAccount.role === 'superadmin' ? 'superadmin_token' : 'admin_token';
-                const userKey = adminAccount.role === 'superadmin' ? 'superadmin_user' : 'admin_user';
+            if (adminResponse.success && adminResponse.data) {
+                // Connexion Admin réussie
+                const adminData = adminResponse.data;
+                localStorage.setItem('admin_token', 'token_' + Date.now());
+                localStorage.setItem('admin_user', JSON.stringify(adminData.admin));
+                localStorage.setItem('admin_type', adminData.admin.type);
 
-                localStorage.setItem(storageKey, 'simulated_token_' + Date.now());
-                localStorage.setItem(userKey, JSON.stringify({
-                    email: email,
-                    role: adminAccount.role,
-                    loginTime: new Date().toISOString()
-                }));
-
-                router.push(adminAccount.redirect);
+                // Rediriger selon le type retourné par le backend
+                router.push(adminData.redirect);
                 return;
             }
 
@@ -100,14 +90,7 @@ export default function LoginPage() {
                 setError(response.error || 'Identifiants incorrects');
             }
         } catch {
-            // Si l'API échoue et que ce n'est pas un admin connu
-            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
-            if (adminAccount) {
-                // C'est un email admin mais mauvais mot de passe
-                setError('Identifiants incorrects');
-            } else {
-                setError('Identifiants incorrects ou serveur indisponible');
-            }
+            setError('Identifiants incorrects ou serveur indisponible');
         } finally {
             setIsLoading(false);
         }
