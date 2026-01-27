@@ -162,23 +162,28 @@
 
 /* Courses List */
 .coursesList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
 }
 
 .courseItem {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
     text-decoration: none;
-    transition: background var(--transition-fast);
+    transition: all var(--transition-fast);
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-100);
 }
 
 .courseItem:hover {
-    background: var(--neutral-50);
+    background: var(--primary-50);
+    border-color: var(--primary-200);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 
 .courseRank {

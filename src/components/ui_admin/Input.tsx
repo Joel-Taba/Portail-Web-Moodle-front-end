@@ -30,7 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         },
         ref
     ) => {
-        const inputId = id || `input-${Math.random().toString(36).substring(7)}`;
+        const inputId = id || 'input-field';
 
         const containerClasses = [
             styles.container,

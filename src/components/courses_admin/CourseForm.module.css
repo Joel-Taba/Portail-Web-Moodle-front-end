@@ -149,6 +149,62 @@
     border-radius: var(--radius-md);
 }
 
+/* File upload */
+.fileUploadRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.orSeparator {
+    font-size: var(--font-size-sm);
+    color: var(--neutral-500);
+    font-style: italic;
+}
+
+.fileInput {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.fileLabel {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--primary-500);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.fileLabel:hover {
+    background: var(--primary-600);
+}
+
+.photoPreview {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--neutral-50);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--neutral-300);
+}
+
+.photoPreview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 /* Actions */
 .actions {
     display: flex;

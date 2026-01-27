@@ -7,10 +7,15 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { activityStorage, coursesStorage, categoriesStorage } from '@/lib/storage';
-import { Select } from '@/components/ui_admin/Select';
-import { Badge } from '@/components/ui_admin/Badge';
+import { Select } from '@/components/ui/Select';
+import { Badge } from '@/components/ui/Badge';
+import { PlusIcon, EditIcon, DeleteIcon, ArchiveIcon, CheckCircleIcon, UsersIcon, CoursesIcon, CategoriesIcon, AlertCircleIcon, HistoryIcon } from '@/components/icons';
 import type { ActivityLog, EntityType, ActivityAction } from '@/lib/types';
 import styles from './page.module.css';
+
+// ...
+
+// ... imports
 
 export default function HistoryPage() {
     const [activities, setActivities] = useState<ActivityLog[]>([]);
@@ -33,30 +38,30 @@ export default function HistoryPage() {
 
     const entityOptions = [
         { value: 'all', label: 'Tous les types' },
-        { value: 'course', label: '📚 Cours' },
-        { value: 'category', label: '📁 Catégories' },
-        { value: 'user', label: '👤 Utilisateurs' },
+        { value: 'course', label: 'Cours' },
+        { value: 'category', label: 'Catégories' },
+        { value: 'user', label: 'Utilisateurs' },
     ];
 
     const actionOptions = [
         { value: 'all', label: 'Toutes les actions' },
-        { value: 'create', label: '➕ Création' },
-        { value: 'update', label: '✏️ Modification' },
-        { value: 'delete', label: '🗑️ Suppression' },
-        { value: 'archive', label: '📦 Archivage' },
-        { value: 'publish', label: '📢 Publication' },
+        { value: 'create', label: 'Création' },
+        { value: 'update', label: 'Modification' },
+        { value: 'delete', label: 'Suppression' },
+        { value: 'archive', label: 'Archivage' },
+        { value: 'publish', label: 'Publication' },
     ];
 
     const getActionIcon = (action: ActivityAction) => {
-        const icons: Record<ActivityAction, string> = {
-            create: '➕',
-            update: '✏️',
-            delete: '🗑️',
-            archive: '📦',
-            publish: '📢',
-            unpublish: '📴',
-        };
-        return icons[action] || '📝';
+        switch (action) {
+            case 'create': return <PlusIcon size={16} />;
+            case 'update': return <EditIcon size={16} />;
+            case 'delete': return <DeleteIcon size={16} />;
+            case 'archive': return <ArchiveIcon size={16} />;
+            case 'publish': return <CheckCircleIcon size={16} />;
+            case 'unpublish': return <AlertCircleIcon size={16} />;
+            default: return <EditIcon size={16} />;
+        }
     };
 
     const getActionLabel = (action: ActivityAction) => {
@@ -72,12 +77,12 @@ export default function HistoryPage() {
     };
 
     const getEntityIcon = (type: EntityType) => {
-        const icons: Record<EntityType, string> = {
-            course: '📚',
-            category: '📁',
-            user: '👤',
-        };
-        return icons[type] || '📄';
+        switch (type) {
+            case 'course': return <CoursesIcon size={16} />;
+            case 'category': return <CategoriesIcon size={16} />;
+            case 'user': return <UsersIcon size={16} />;
+            default: return <EditIcon size={16} />;
+        }
     };
 
     const formatDate = (dateString: string) => {
@@ -171,7 +176,10 @@ export default function HistoryPage() {
                                 </div>
                                 <div className={styles.timelineMeta}>
                                     <span className={styles.user}>
-                                        👤 {activity.userName}
+                                        <span style={{ display: 'inline-flex', marginRight: '4px', verticalAlign: 'middle' }}>
+                                            <UsersIcon size={14} />
+                                        </span>
+                                        {activity.userName}
                                     </span>
                                     <span className={styles.time}>
                                         {formatDate(activity.timestamp)}
@@ -186,7 +194,9 @@ export default function HistoryPage() {
                 </div>
             ) : (
                 <div className={styles.empty}>
-                    <div className={styles.emptyIcon}>📋</div>
+                    <div className={styles.emptyIcon}>
+                        <HistoryIcon size={48} />
+                    </div>
                     <h3>Aucune activité</h3>
                     <p>L'historique des modifications apparaîtra ici.</p>
                 </div>

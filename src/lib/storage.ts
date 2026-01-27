@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
     CATEGORIES: 'enspy_categories',
     ACTIVITY_LOG: 'enspy_activity_log',
     SETTINGS: 'enspy_settings',
+    STUDENTS: 'enspy_students',
 } as const;
 
 /**
@@ -103,7 +104,7 @@ export function clearAllStorage(): boolean {
 // Fonctions spécifiques par domaine
 // ============================================
 
-import type { User, Course, Category, ActivityLog } from './types';
+import type { User, Course, Category, ActivityLog, Student } from './types';
 
 /**
  * Authentification
@@ -214,6 +215,81 @@ export const activityStorage = {
     },
 
     clear: (): boolean => activityStorage.setAll([]),
+};
+
+/**
+ * Élèves (demandes d'inscription)
+ */
+export const studentsStorage = {
+    getAll: (): Student[] => getStorageItem<Student[]>(STORAGE_KEYS.STUDENTS) || [],
+    setAll: (students: Student[]): boolean => setStorageItem(STORAGE_KEYS.STUDENTS, students),
+
+    getByCourseId: (courseId: string): Student[] => {
+        const students = studentsStorage.getAll();
+        return students.filter((s) => s.courseId === courseId);
+    },
+
+    getPendingByCourseId: (courseId: string): Student[] => {
+        const students = studentsStorage.getAll();
+        return students.filter((s) => s.courseId === courseId && s.status === 'pending');
+    },
+
+    add: (student: Omit<Student, 'id' | 'registrationDate' | 'status'>): boolean => {
+        const students = studentsStorage.getAll();
+        const newStudent: Student = {
+            ...student,
+            id: `student_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+            registrationDate: new Date().toISOString(),
+            status: 'pending',
+        };
+        students.push(newStudent);
+        return studentsStorage.setAll(students);
+    },
+
+    updateStatus: (id: string, status: 'pending' | 'approved' | 'rejected'): boolean => {
+        const students = studentsStorage.getAll();
+        const index = students.findIndex((s) => s.id === id);
+        if (index === -1) return false;
+        students[index] = { ...students[index], status };
+        return studentsStorage.setAll(students);
+    },
+
+    delete: (id: string): boolean => {
+        const students = studentsStorage.getAll();
+        const filtered = students.filter((s) => s.id !== id);
+        return studentsStorage.setAll(filtered);
+    },
+
+    // Générer des données de démo si vide
+    initializeWithMockData: (courseIds: string[]): boolean => {
+        const existing = studentsStorage.getAll();
+        if (existing.length > 0) return true;
+
+        const mockNames = [
+            'Alice Nguema', 'Bernard Fotso', 'Carine Mbarga', 'David Ewolo', 'Emilie Kom',
+            'François Ndjock', 'Georgette Atangana', 'Henri Mpondo', 'Irène Soh', 'Jacques Fouda',
+            'Karine Biya', 'Luc Njifenjou', 'Marie Tchinda', 'Nicolas Fonfack', 'Odile Messi'
+        ];
+
+        const mockStudents: Student[] = [];
+        courseIds.forEach((courseId, cidx) => {
+            const count = Math.floor(Math.random() * 5) + 2; // 2-6 étudiants par cours
+            for (let i = 0; i < count; i++) {
+                const nameIndex = (cidx * 3 + i) % mockNames.length;
+                mockStudents.push({
+                    id: `student_${Date.now()}_${cidx}_${i}`,
+                    name: mockNames[nameIndex],
+                    email: `${mockNames[nameIndex].toLowerCase().replace(' ', '.')}@enspy.cm`,
+                    phone: `+237 6${Math.floor(Math.random() * 9) + 1}${Math.random().toString().slice(2, 10)}`,
+                    courseId,
+                    registrationDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                });
+            }
+        });
+
+        return studentsStorage.setAll(mockStudents);
+    },
 };
 
 /**

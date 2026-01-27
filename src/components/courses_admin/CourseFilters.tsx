@@ -46,9 +46,8 @@ export function CourseFilters({
 
     const typeOptions = [
         { value: 'all', label: 'Tous les types' },
-        { value: 'free', label: 'Gratuit' },
-        { value: 'paid', label: 'Payant' },
         { value: 'certified', label: 'Certifiant' },
+        { value: 'non-certified', label: 'Non certifiant' },
     ];
 
     const formatOptions = [

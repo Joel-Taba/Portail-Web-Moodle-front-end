@@ -82,6 +82,7 @@ export function TypeBadge({ type }: { type: string }) {
         free: { variant: 'success', label: 'Gratuit' },
         paid: { variant: 'primary', label: 'Payant' },
         certified: { variant: 'secondary', label: 'Certifiant' },
+        'non-certified': { variant: 'default', label: 'Non certifiant' },
     };
 
     const config = typeConfig[type] || { variant: 'default', label: type };

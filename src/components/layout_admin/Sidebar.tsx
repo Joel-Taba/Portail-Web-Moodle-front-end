@@ -41,6 +41,17 @@ const navItems: NavItem[] = [
         ),
     },
     {
+        label: 'Archives',
+        href: '/dashboard/courses/archived',
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M17.5 6.5V17.5H2.5V6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M19 2.5H1V6.5H19V2.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8.5 10H11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+        ),
+    },
+    {
         label: 'Catégories',
         href: '/dashboard/categories',
         icon: (
@@ -49,18 +60,7 @@ const navItems: NavItem[] = [
             </svg>
         ),
     },
-    {
-        label: 'Ordonnancement',
-        href: '/dashboard/ordering',
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <circle cx="6" cy="5" r="1.5" fill="currentColor" />
-                <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-                <circle cx="14" cy="15" r="1.5" fill="currentColor" />
-            </svg>
-        ),
-    },
+
     {
         label: 'Historique',
         href: '/dashboard/history',
@@ -131,8 +131,19 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             <nav className={styles.nav}>
                 <ul className={styles.navList}>
                     {navItems.map((item) => {
-                        const isActive = pathname === item.href ||
-                            (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                        // Logique spéciale: /dashboard/courses ne doit pas être actif quand on est sur /dashboard/courses/archived
+                        let isActive = false;
+                        if (item.href === '/dashboard') {
+                            // Dashboard: exact match only
+                            isActive = pathname === '/dashboard';
+                        } else if (item.href === '/dashboard/courses') {
+                            // Cours: actif seulement pour /dashboard/courses, pas pour /dashboard/courses/archived
+                            isActive = pathname === '/dashboard/courses' ||
+                                (pathname.startsWith('/dashboard/courses/') && !pathname.startsWith('/dashboard/courses/archived'));
+                        } else {
+                            // Autres pages: correspondance exacte ou startsWith
+                            isActive = pathname === item.href || pathname.startsWith(item.href);
+                        }
 
                         return (
                             <li key={item.href}>

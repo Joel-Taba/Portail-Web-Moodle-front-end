@@ -1,31 +1,24 @@
 /**
  * Profile Page - ENSPY Admin Portal
- * Page de profil utilisateur
+ * Page de profil utilisateur (simplifiée)
  */
 
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui_admin/Button';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/Button';
 import {
     UsersIcon,
     EditIcon,
     SettingsIcon,
-    MoonIcon,
-    SunIcon,
-    GlobeIcon,
     CheckCircleIcon,
 } from '@/components/icons';
-import { useTheme } from '@/contexts/ThemeContext';
-import { useI18n } from '@/contexts/I18nContext';
 import styles from './page.module.css';
 
 export default function ProfilePage() {
     const { user, updateUser } = useAuth();
-    const { theme, setTheme } = useTheme();
-    const { locale, setLocale } = useI18n();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -133,66 +126,6 @@ export default function ProfilePage() {
 
                 {/* Settings Grid */}
                 <div className={styles.settingsGrid}>
-                    {/* Theme Settings */}
-                    <section className={styles.settingsCard}>
-                        <div className={styles.settingsHeader}>
-                            <div className={styles.settingsIcon}>
-                                {theme === 'dark' ? <MoonIcon size={24} /> : <SunIcon size={24} />}
-                            </div>
-                            <div>
-                                <h3 className={styles.settingsTitle}>Apparence</h3>
-                                <p className={styles.settingsDesc}>Personnalisez l&apos;interface</p>
-                            </div>
-                        </div>
-                        <div className={styles.themeOptions}>
-                            <button
-                                className={`${styles.themeOption} ${theme === 'light' ? styles.active : ''}`}
-                                onClick={() => setTheme('light')}
-                            >
-                                <SunIcon size={20} />
-                                <span>Clair</span>
-                            </button>
-                            <button
-                                className={`${styles.themeOption} ${theme === 'dark' ? styles.active : ''}`}
-                                onClick={() => setTheme('dark')}
-                            >
-                                <MoonIcon size={20} />
-                                <span>Sombre</span>
-                            </button>
-                        </div>
-                    </section>
-
-                    {/* Language Settings */}
-                    <section className={styles.settingsCard}>
-                        <div className={styles.settingsHeader}>
-                            <div className={styles.settingsIcon}>
-                                <GlobeIcon size={24} />
-                            </div>
-                            <div>
-                                <h3 className={styles.settingsTitle}>Langue</h3>
-                                <p className={styles.settingsDesc}>Choisissez votre langue</p>
-                            </div>
-                        </div>
-                        <div className={styles.languageOptions}>
-                            <button
-                                className={`${styles.languageOption} ${locale === 'fr' ? styles.active : ''}`}
-                                onClick={() => setLocale('fr')}
-                            >
-                                <span className={styles.flag}>🇫🇷</span>
-                                <span>Français</span>
-                                {locale === 'fr' && <CheckCircleIcon size={18} color="var(--primary-500)" />}
-                            </button>
-                            <button
-                                className={`${styles.languageOption} ${locale === 'en' ? styles.active : ''}`}
-                                onClick={() => setLocale('en')}
-                            >
-                                <span className={styles.flag}>🇬🇧</span>
-                                <span>English</span>
-                                {locale === 'en' && <CheckCircleIcon size={18} color="var(--primary-500)" />}
-                            </button>
-                        </div>
-                    </section>
-
                     {/* Account Info */}
                     <section className={styles.settingsCard}>
                         <div className={styles.settingsHeader}>

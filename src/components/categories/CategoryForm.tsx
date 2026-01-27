@@ -6,10 +6,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Input } from '@/components/ui_admin/Input';
-import { Select } from '@/components/ui_admin/Select';
-import { Button } from '@/components/ui_admin/Button';
-import { Modal } from '@/components/ui_admin/Modal';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
+import { CATEGORY_ICONS, getCategoryIcon } from '@/components/icons';
 import type { Category } from '@/lib/types';
 import styles from './CategoryForm.module.css';
 
@@ -22,11 +23,6 @@ interface CategoryFormProps {
     defaultParentId?: string;
 }
 
-const EMOJI_OPTIONS = [
-    '💻', '🔧', '⚡', '🏗️', '📐', '📊', '🔬', '🧪',
-    '🎓', '📚', '✏️', '🔢', '🌐', '🛡️', '🤖', '📱',
-];
-
 export function CategoryForm({
     isOpen,
     onClose,
@@ -38,7 +34,7 @@ export function CategoryForm({
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        icon: '📁',
+        icon: 'folder',
         parentId: null as string | null,
         order: 0,
     });
@@ -60,7 +56,7 @@ export function CategoryForm({
                 setFormData({
                     name: '',
                     description: '',
-                    icon: '📁',
+                    icon: 'folder',
                     parentId: defaultParentId || null,
                     order: 0,
                 });
@@ -115,14 +111,14 @@ export function CategoryForm({
                 <div className={styles.fieldGroup}>
                     <label className={styles.label}>Icône</label>
                     <div className={styles.emojiGrid}>
-                        {EMOJI_OPTIONS.map(emoji => (
+                        {CATEGORY_ICONS.map(icon => (
                             <button
-                                key={emoji}
+                                key={icon.name}
                                 type="button"
-                                className={`${styles.emojiBtn} ${formData.icon === emoji ? styles.selected : ''}`}
-                                onClick={() => handleChange('icon', emoji)}
+                                className={`${styles.emojiBtn} ${formData.icon === icon.name ? styles.selected : ''}`}
+                                onClick={() => handleChange('icon', icon.name)}
                             >
-                                {emoji}
+                                <icon.component size={24} />
                             </button>
                         ))}
                     </div>

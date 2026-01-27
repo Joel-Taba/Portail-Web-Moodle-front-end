@@ -6,10 +6,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui_admin/Input';
-import { Select } from '@/components/ui_admin/Select';
-import { Button } from '@/components/ui_admin/Button';
-import { Badge } from '@/components/ui_admin/Badge';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import {
+    DocumentIcon,
+    TagIcon,
+    BookStackIcon,
+    GearIcon,
+    InstructorIcon,
+    ImageIcon,
+    LinkIcon,
+    StarFilledIcon,
+    FireIcon,
+} from '@/components/icons';
 import type { Course, Category, CourseLevel, CourseFormat, CourseLanguage, CourseType, CourseStatus } from '@/lib/types';
 import styles from './CourseForm.module.css';
 
@@ -140,6 +151,29 @@ export function CourseForm({
         }
     };
 
+    // File upload handlers - convert to base64 data URL
+    const handleInstructorPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleInstructorChange('photo', reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleChange('thumbnailUrl', reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
 
@@ -178,7 +212,7 @@ export function CourseForm({
             {/* Section : Informations de base */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>📝</span>
+                    <span className={styles.sectionIcon}><DocumentIcon size={20} /></span>
                     Informations de base
                 </h2>
 
@@ -225,7 +259,7 @@ export function CourseForm({
             {/* Section : Classification */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🏷️</span>
+                    <span className={styles.sectionIcon}><TagIcon size={20} /></span>
                     Classification
                 </h2>
 
@@ -278,7 +312,7 @@ export function CourseForm({
             {/* Section : Détails pédagogiques */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>📚</span>
+                    <span className={styles.sectionIcon}><BookStackIcon size={20} /></span>
                     Détails pédagogiques
                 </h2>
 
@@ -339,7 +373,7 @@ export function CourseForm({
             {/* Section : Type et statut */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>⚙️</span>
+                    <span className={styles.sectionIcon}><GearIcon size={20} /></span>
                     Type et statut
                 </h2>
 
@@ -367,7 +401,7 @@ export function CourseForm({
                             checked={formData.isFeatured}
                             onChange={(e) => handleChange('isFeatured', e.target.checked)}
                         />
-                        <span>⭐ Mettre en vedette (À la une)</span>
+                        <span><StarFilledIcon size={16} color="#EAB308" /> Mettre en vedette (À la une)</span>
                     </label>
                     <label className={styles.checkbox}>
                         <input
@@ -375,7 +409,7 @@ export function CourseForm({
                             checked={formData.isTrending}
                             onChange={(e) => handleChange('isTrending', e.target.checked)}
                         />
-                        <span>🔥 Marquer comme Tendance</span>
+                        <span><FireIcon size={16} color="#EF4444" /> Marquer comme Tendance</span>
                     </label>
                 </div>
             </section>
@@ -383,7 +417,7 @@ export function CourseForm({
             {/* Section : Instructeur */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>👨‍🏫</span>
+                    <span className={styles.sectionIcon}><InstructorIcon size={20} /></span>
                     Instructeur
                 </h2>
 
@@ -397,13 +431,37 @@ export function CourseForm({
                         required
                         fullWidth
                     />
-                    <Input
-                        label="Photo (URL)"
-                        placeholder="https://..."
-                        value={formData.instructor.photo}
-                        onChange={(e) => handleInstructorChange('photo', e.target.value)}
-                        fullWidth
-                    />
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Photo de l'instructeur</label>
+                        <Input
+                            placeholder="https://... (URL de la photo)"
+                            value={formData.instructor.photo.startsWith('data:') ? '' : formData.instructor.photo}
+                            onChange={(e) => handleInstructorChange('photo', e.target.value)}
+                            fullWidth
+                        />
+                        <div className={styles.fileUploadRow}>
+                            <span className={styles.orSeparator}>ou</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleInstructorPhotoUpload}
+                                className={styles.fileInput}
+                                id="instructor-photo-upload"
+                            />
+                            <label htmlFor="instructor-photo-upload" className={styles.fileLabel}>
+                                Choisir un fichier
+                            </label>
+                        </div>
+                        {formData.instructor.photo && (
+                            <div className={styles.photoPreview}>
+                                <img
+                                    src={formData.instructor.photo}
+                                    alt="Aperçu photo instructeur"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.fieldGroup}>
@@ -431,19 +489,34 @@ export function CourseForm({
             {/* Section : Médias */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🖼️</span>
+                    <span className={styles.sectionIcon}><ImageIcon size={20} /></span>
                     Médias
                 </h2>
 
                 <div className={styles.row}>
-                    <Input
-                        label="Image miniature (URL)"
-                        placeholder="https://..."
-                        value={formData.thumbnailUrl}
-                        onChange={(e) => handleChange('thumbnailUrl', e.target.value)}
-                        hint="Image 16:9 recommandée (ex: 800x450px)"
-                        fullWidth
-                    />
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Image miniature</label>
+                        <Input
+                            placeholder="https://... (URL de l'image)"
+                            value={formData.thumbnailUrl.startsWith('data:') ? '' : formData.thumbnailUrl}
+                            onChange={(e) => handleChange('thumbnailUrl', e.target.value)}
+                            hint="Image 16:9 recommandée (ex: 800x450px)"
+                            fullWidth
+                        />
+                        <div className={styles.fileUploadRow}>
+                            <span className={styles.orSeparator}>ou</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleThumbnailUpload}
+                                className={styles.fileInput}
+                                id="thumbnail-upload"
+                            />
+                            <label htmlFor="thumbnail-upload" className={styles.fileLabel}>
+                                Choisir un fichier
+                            </label>
+                        </div>
+                    </div>
                     <Input
                         label="Vidéo teaser (URL YouTube/Vimeo)"
                         placeholder="https://youtube.com/watch?v=..."
@@ -470,7 +543,7 @@ export function CourseForm({
             {/* Section : Redirection */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🔗</span>
+                    <span className={styles.sectionIcon}><LinkIcon size={20} /></span>
                     Redirection
                 </h2>
 

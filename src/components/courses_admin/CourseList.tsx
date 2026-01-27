@@ -7,7 +7,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { StatusBadge, LevelBadge, TypeBadge } from '@/components/ui_admin/Badge';
+import { StatusBadge, LevelBadge, TypeBadge } from '@/components/ui/Badge';
+import { EditIcon, EyeIcon, ArchiveIcon, DeleteIcon, StarFilledIcon, FireIcon, BookStackIcon } from '@/components/icons';
 import type { Course, Category } from '@/lib/types';
 import styles from './CourseList.module.css';
 
@@ -37,7 +38,7 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
     if (courses.length === 0) {
         return (
             <div className={styles.empty}>
-                <div className={styles.emptyIcon}>📚</div>
+                <div className={styles.emptyIcon}><BookStackIcon size={48} /></div>
                 <h3>Aucun cours trouvé</h3>
                 <p>Essayez de modifier vos filtres ou créez un nouveau cours.</p>
                 <Link href="/dashboard/courses/new" className={styles.emptyButton}>
@@ -58,7 +59,6 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                         <th>Niveau</th>
                         <th>Type</th>
                         <th>Statut</th>
-                        <th className={styles.thStats}>Vues</th>
                         <th className={styles.thStats}>Inscrits</th>
                         <th>Mis à jour</th>
                         <th className={styles.thActions}>Actions</th>
@@ -79,8 +79,8 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                                     <Link href={`/dashboard/courses/${course.id}`} className={styles.titleLink}>
                                         {course.title}
                                     </Link>
-                                    {course.isFeatured && <span className={styles.featuredIcon}>⭐</span>}
-                                    {course.isTrending && <span className={styles.trendingIcon}>🔥</span>}
+                                    {course.isFeatured && <span className={styles.featuredIcon}><StarFilledIcon size={14} color="#EAB308" /></span>}
+                                    {course.isTrending && <span className={styles.trendingIcon}><FireIcon size={14} color="#EF4444" /></span>}
                                 </div>
                                 <span className={styles.instructor}>{course.instructor.name}</span>
                             </td>
@@ -97,9 +97,6 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                                 <StatusBadge status={course.status} />
                             </td>
                             <td className={styles.tdStats}>
-                                {course.views.toLocaleString('fr-FR')}
-                            </td>
-                            <td className={styles.tdStats}>
                                 {course.enrollments}
                             </td>
                             <td className={styles.tdDate}>
@@ -112,14 +109,14 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                                         className={styles.actionBtn}
                                         title="Modifier"
                                     >
-                                        ✏️
+                                        <EditIcon size={16} />
                                     </Link>
                                     <Link
                                         href={`/dashboard/courses/${course.id}/preview`}
                                         className={styles.actionBtn}
                                         title="Prévisualiser"
                                     >
-                                        👁️
+                                        <EyeIcon size={16} />
                                     </Link>
                                     {course.status !== 'archived' && onArchive && (
                                         <button
@@ -127,7 +124,7 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                                             onClick={() => onArchive(course.id)}
                                             title="Archiver"
                                         >
-                                            📦
+                                            <ArchiveIcon size={16} />
                                         </button>
                                     )}
                                     {onDelete && (
@@ -136,7 +133,7 @@ export function CourseList({ courses, categories, onArchive, onDelete }: CourseL
                                             onClick={() => onDelete(course.id)}
                                             title="Supprimer"
                                         >
-                                            🗑️
+                                            <DeleteIcon size={16} />
                                         </button>
                                     )}
                                 </div>
