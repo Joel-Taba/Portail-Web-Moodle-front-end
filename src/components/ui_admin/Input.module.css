@@ -1,0 +1,130 @@
+/* Input Component Styles */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+/* Label */
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--neutral-700);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.required {
+    color: var(--error-500);
+}
+
+/* Input Wrapper */
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Input */
+.input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    color: var(--neutral-900);
+    background: white;
+    border: 2px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    outline: none;
+}
+
+.input::placeholder {
+    color: var(--neutral-400);
+}
+
+.input:hover:not(:disabled) {
+    border-color: var(--neutral-400);
+}
+
+.input:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+
+.input:disabled {
+    background: var(--neutral-100);
+    color: var(--neutral-500);
+    cursor: not-allowed;
+}
+
+/* Input avec icônes */
+.hasLeftIcon .input {
+    padding-left: 42px;
+}
+
+.hasRightIcon .input {
+    padding-right: 42px;
+}
+
+/* Icônes */
+.leftIcon,
+.rightIcon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--neutral-500);
+    pointer-events: none;
+}
+
+.leftIcon {
+    left: var(--spacing-sm);
+}
+
+.rightIcon {
+    right: var(--spacing-sm);
+}
+
+.leftIcon svg,
+.rightIcon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* État d'erreur */
+.error .input {
+    border-color: var(--error-500);
+    background-color: var(--error-50);
+}
+
+.error .input:focus {
+    border-color: var(--error-500);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Messages */
+.errorMessage {
+    font-size: var(--font-size-sm);
+    color: var(--error-600);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.errorMessage::before {
+    content: '⚠';
+}
+
+.hint {
+    font-size: var(--font-size-sm);
+    color: var(--neutral-500);
+    margin: 0;
+}

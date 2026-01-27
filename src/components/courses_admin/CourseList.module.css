@@ -1,0 +1,229 @@
+/* CourseList Component Styles */
+
+.container {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--neutral-200);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--neutral-600);
+    background: var(--neutral-50);
+    border-bottom: 1px solid var(--neutral-200);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--neutral-100);
+    font-size: var(--font-size-sm);
+    color: var(--neutral-700);
+    vertical-align: middle;
+}
+
+.table tr:hover td {
+    background: var(--neutral-50);
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Specific columns */
+.thImage {
+    width: 80px;
+}
+
+.thTitle {
+    min-width: 250px;
+}
+
+.thStats {
+    width: 80px;
+    text-align: right;
+}
+
+.thActions {
+    width: 120px;
+}
+
+/* Image cell */
+.tdImage {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.thumbnail {
+    width: 64px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}
+
+/* Title cell */
+.tdTitle {
+    max-width: 300px;
+}
+
+.titleCell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.titleLink {
+    font-weight: var(--font-weight-medium);
+    color: var(--neutral-900);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.titleLink:hover {
+    color: var(--primary-500);
+}
+
+.featuredIcon,
+.trendingIcon {
+    font-size: 0.875rem;
+}
+
+.instructor {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--neutral-500);
+    margin-top: 2px;
+}
+
+/* Category */
+.tdCategory {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Stats */
+.tdStats {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Date */
+.tdDate {
+    white-space: nowrap;
+    color: var(--neutral-500);
+}
+
+/* Actions */
+.tdActions {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.actionButtons {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--neutral-100);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.actionBtn:hover {
+    background: var(--primary-100);
+}
+
+.actionBtn.danger:hover {
+    background: var(--error-100);
+}
+
+/* Empty state */
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--neutral-200);
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--neutral-900);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.empty p {
+    font-size: var(--font-size-sm);
+    color: var(--neutral-500);
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.emptyButton {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--primary-500);
+    color: white;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: background var(--transition-fast);
+}
+
+.emptyButton:hover {
+    background: var(--primary-600);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+
+    .thStats,
+    .tdStats {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .thImage,
+    .tdImage,
+    .tdCategory,
+    .tdDate {
+        display: none;
+    }
+
+    .thTitle {
+        min-width: auto;
+    }
+}

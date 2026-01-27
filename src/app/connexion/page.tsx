@@ -1,11 +1,13 @@
 /* ============================================
    ENSPY COURSES PORTAL - Login Page
+   Connexion unifiée avec détection automatique du rôle
    ============================================ */
 
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
 import api from '@/lib/api';
@@ -32,8 +34,22 @@ const EyeOffIcon = () => (
     </svg>
 );
 
+const LockIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+);
+
+// Identifiants administrateurs (en production, ceci serait géré côté backend)
+const ADMIN_CREDENTIALS = {
+    'superadmin@enspy.cm': { password: 'superadmin123', role: 'superadmin', redirect: '/superadmin' },
+    'admin@enspy.cm': { password: 'admin123', role: 'admin', redirect: '/dashboard' },
+};
+
 export default function LoginPage() {
     const { t } = useLocale();
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -48,24 +64,50 @@ export default function LoginPage() {
 
         // Validation simple
         if (!email || !password) {
-            setError(t('login.error.required'));
+            setError(t('login.error.required') || 'Veuillez remplir tous les champs');
             setIsLoading(false);
             return;
         }
 
         try {
+            // 1. Vérifier si c'est un compte administrateur (Super Admin ou Admin)
+            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
+
+            if (adminAccount && adminAccount.password === password) {
+                // Connexion Admin/Super Admin réussie
+                const storageKey = adminAccount.role === 'superadmin' ? 'superadmin_token' : 'admin_token';
+                const userKey = adminAccount.role === 'superadmin' ? 'superadmin_user' : 'admin_user';
+
+                localStorage.setItem(storageKey, 'simulated_token_' + Date.now());
+                localStorage.setItem(userKey, JSON.stringify({
+                    email: email,
+                    role: adminAccount.role,
+                    loginTime: new Date().toISOString()
+                }));
+
+                router.push(adminAccount.redirect);
+                return;
+            }
+
+            // 2. Si ce n'est pas un admin, tenter la connexion étudiant via API
             const response = await api.auth.login({ email, password });
 
             if (response.success) {
-                // Stockage des infos utilisateur (simulation simple)
                 localStorage.setItem('user', JSON.stringify(response.data.etudiant));
-                // Rediriger vers l'accueil ou le tableau de bord
+                localStorage.setItem('user_token', 'student_token_' + Date.now());
                 window.location.href = '/';
             } else {
                 setError(response.error || 'Identifiants incorrects');
             }
-        } catch (err) {
-            setError('Erreur de connexion au serveur');
+        } catch {
+            // Si l'API échoue et que ce n'est pas un admin connu
+            const adminAccount = ADMIN_CREDENTIALS[email as keyof typeof ADMIN_CREDENTIALS];
+            if (adminAccount) {
+                // C'est un email admin mais mauvais mot de passe
+                setError('Identifiants incorrects');
+            } else {
+                setError('Identifiants incorrects ou serveur indisponible');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -80,9 +122,9 @@ export default function LoginPage() {
                         <div className={styles['login-logo']}>
                             <img src="/images/logo-enspy.png" alt="Logo ENSPY" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
-                        <h1 className={styles['login-title']}>{t('login.title')}</h1>
+                        <h1 className={styles['login-title']}>{t('login.title') || 'Connexion'}</h1>
                         <p className={styles['login-subtitle']}>
-                            {t('login.subtitle')}
+                            {t('login.subtitle') || 'Accédez à votre espace ENSPY'}
                         </p>
                     </div>
 
@@ -92,52 +134,44 @@ export default function LoginPage() {
                             {/* Email Field */}
                             <div className={styles['login-field']}>
                                 <label htmlFor="email" className={styles['login-label']}>
-                                    {t('login.email')}
+                                    {t('login.email') || 'Adresse email'}
                                 </label>
                                 <input
                                     type="email"
                                     id="email"
                                     className={styles['login-input']}
-                                    placeholder={t('login.emailPlaceholder')}
+                                    placeholder={t('login.emailPlaceholder') || 'votre.email@enspy.cm'}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     autoComplete="email"
+                                    disabled={isLoading}
                                 />
                             </div>
 
                             {/* Password Field */}
                             <div className={styles['login-field']}>
                                 <label htmlFor="password" className={styles['login-label']}>
-                                    {t('login.password')}
+                                    {t('login.password') || 'Mot de passe'}
                                 </label>
-                                <div style={{ position: 'relative' }}>
+                                <div className={styles['login-input-wrapper']}>
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         id="password"
                                         className={styles['login-input']}
-                                        style={{ paddingRight: '48px', width: '100%' }}
-                                        placeholder={t('login.passwordPlaceholder')}
+                                        placeholder={t('login.passwordPlaceholder') || '••••••••'}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         autoComplete="current-password"
+                                        disabled={isLoading}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        style={{
-                                            position: 'absolute',
-                                            right: '12px',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: 'var(--color-gray-400)',
-                                            padding: '4px',
-                                        }}
+                                        className={styles['login-password-toggle']}
                                         aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                                        disabled={isLoading}
                                     >
                                         {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                                     </button>
@@ -151,26 +185,19 @@ export default function LoginPage() {
                                         type="checkbox"
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
+                                        disabled={isLoading}
                                     />
-                                    {t('login.rememberMe')}
+                                    {t('login.rememberMe') || 'Se souvenir de moi'}
                                 </label>
                                 <Link href="/mot-de-passe-oublie" className={styles['login-forgot']}>
-                                    {t('login.forgotPassword')}
+                                    {t('login.forgotPassword') || 'Mot de passe oublié ?'}
                                 </Link>
                             </div>
 
                             {/* Error Message */}
                             {error && (
-                                <div
-                                    style={{
-                                        padding: 'var(--spacing-3)',
-                                        backgroundColor: '#FFEBEE',
-                                        color: '#C62828',
-                                        borderRadius: 'var(--radius-md)',
-                                        fontSize: 'var(--font-size-sm)',
-                                        textAlign: 'center',
-                                    }}
-                                >
+                                <div className={styles['login-error']}>
+                                    <LockIcon />
                                     {error}
                                 </div>
                             )}
@@ -181,7 +208,14 @@ export default function LoginPage() {
                                 className={styles['login-submit']}
                                 disabled={isLoading}
                             >
-                                {isLoading ? t('login.submitting') : t('login.submit')}
+                                {isLoading ? (
+                                    <>
+                                        <span className={styles['login-spinner']}></span>
+                                        Connexion en cours...
+                                    </>
+                                ) : (
+                                    t('login.submit') || 'Se connecter'
+                                )}
                             </button>
                         </form>
                     </div>
@@ -189,9 +223,9 @@ export default function LoginPage() {
                     {/* Footer */}
                     <div className={styles['login-footer']}>
                         <p className={styles['login-footer-text']}>
-                            {t('login.noAccount')}{' '}
+                            {t('login.noAccount') || "Vous n'avez pas de compte ?"}{' '}
                             <Link href="/inscription" className={styles['login-footer-link']}>
-                                {t('login.registerLink')}
+                                {t('login.registerLink') || "S'inscrire"}
                             </Link>
                         </p>
                     </div>
@@ -200,7 +234,7 @@ export default function LoginPage() {
                 {/* Back Link */}
                 <Link href="/" className={styles['login-back']}>
                     <ArrowLeftIcon />
-                    {t('common.backToHome')}
+                    {t('common.backToHome') || "Retour à l'accueil"}
                 </Link>
             </div>
         </div>
