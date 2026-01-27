@@ -8,7 +8,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { coursesStorage, categoriesStorage, activityStorage, generateId } from '@/lib/storage';
+import { activityStorage } from '@/lib/storage';
+import { coursesApi } from '@/lib/api/coursesApi';
+import { categoriesApi } from '@/lib/api/categoriesApi';
 import { CourseForm } from '@/components/courses/CourseForm';
 import type { Category, Course } from '@/lib/types';
 import styles from './page.module.css';
@@ -18,49 +20,59 @@ export default function NewCoursePage() {
     const { user } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
-        setCategories(categoriesStorage.getAll());
+        const loadCategories = async () => {
+            try {
+                const data = await categoriesApi.getAll();
+                setCategories(data);
+            } catch (err) {
+                console.error('Failed to load categories:', err);
+            } finally {
+                setPageLoading(false);
+            }
+        };
+        loadCategories();
     }, []);
 
     const handleSubmit = async (data: Partial<Course>) => {
         setIsLoading(true);
 
-        // Simuler un délai réseau
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            // Création du cours via API
+            // Note: Pour l'instructeur, le backend attend un ID existant ou crée un nouveau si on envoie l'objet
+            // Le mapping dans coursesApi gère les champs de base.
+            // TODO: Gérer l'upload d'image (thumbnail) - CourseForm doit renvoyer le File object
 
-        const courses = coursesStorage.getAll();
-        const newCourse: Course = {
-            ...data as Course,
-            id: generateId('course'),
-            order: courses.length,
-            views: 0,
-            enrollments: 0,
-            rating: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: user?.id || '',
-        };
+            const newCourse = await coursesApi.create(data);
 
-        coursesStorage.add(newCourse);
+            // Log activity
+            activityStorage.add({
+                action: 'create',
+                entityType: 'course',
+                entityId: newCourse.id,
+                entityTitle: newCourse.title,
+                userId: user?.id || '',
+                userName: user?.name || '',
+            });
 
-        // Log activity
-        activityStorage.add({
-            action: 'create',
-            entityType: 'course',
-            entityId: newCourse.id,
-            entityTitle: newCourse.title,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
-
-        setIsLoading(false);
-        router.push('/dashboard/courses');
+            router.push('/dashboard/courses');
+        } catch (err) {
+            console.error('Failed to create course:', err);
+            alert('Erreur lors de la création du cours. Veuillez réessayer.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCancel = () => {
         router.push('/dashboard/courses');
     };
+
+    if (pageLoading) {
+        return <div className={styles.container}>Chargement...</div>;
+    }
 
     return (
         <div className={styles.container}>

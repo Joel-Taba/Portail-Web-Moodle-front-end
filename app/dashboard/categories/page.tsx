@@ -7,7 +7,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { categoriesStorage, coursesStorage, activityStorage, generateId } from '@/lib/storage';
+import { activityStorage, generateId } from '@/lib/storage';
+import { categoriesApi } from '@/lib/api/categoriesApi';
+import { coursesApi } from '@/lib/api/coursesApi';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/Modal';
 import { CategoryCard } from '@/components/categories/CategoryCard';
@@ -19,6 +21,8 @@ export default function CategoriesPage() {
     const { user } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
     const [courses, setCourses] = useState<{ category: string }[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Form modal state
     const [formModal, setFormModal] = useState<{
@@ -38,9 +42,26 @@ export default function CategoriesPage() {
     });
 
     // Load data
+    const loadData = async () => {
+        try {
+            setIsLoading(true);
+            const [loadedCategories, loadedCourses] = await Promise.all([
+                categoriesApi.getAll(),
+                coursesApi.getAll()
+            ]);
+            setCategories(loadedCategories);
+            setCourses(loadedCourses.map(c => ({ category: c.category })));
+            setError(null);
+        } catch (err) {
+            console.error('Failed to load categories data:', err);
+            setError('Impossible de charger les données. Vérifiez votre connexion.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        setCategories(categoriesStorage.getAll());
-        setCourses(coursesStorage.getAll().map(c => ({ category: c.category })));
+        loadData();
     }, []);
 
     // Get parent categories (those without parentId)
@@ -81,82 +102,78 @@ export default function CategoriesPage() {
         setDeleteModal({ isOpen: true, category });
     };
 
-    const handleFormSubmit = (data: Partial<Category>) => {
-        if (formModal.category) {
-            // Update existing
-            categoriesStorage.update(formModal.category.id, data);
+    const handleFormSubmit = async (data: Partial<Category>) => {
+        try {
+            if (formModal.category) {
+                // Update existing
+                await categoriesApi.update(formModal.category.id, data);
 
-            activityStorage.add({
-                action: 'update',
-                entityType: 'category',
-                entityId: formModal.category.id,
-                entityTitle: data.name || formModal.category.name,
-                userId: user?.id || '',
-                userName: user?.name || '',
-            });
-        } else {
-            // Create new - generate slug from name
-            const generateSlug = (name: string) =>
-                name.toLowerCase()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
+                activityStorage.add({
+                    action: 'update',
+                    entityType: 'category',
+                    entityId: formModal.category.id,
+                    entityTitle: data.name || formModal.category.name,
+                    userId: user?.id || '',
+                    userName: user?.name || '',
+                });
+            } else {
+                // Create new
+                // Le backend gère le slug et la date
+                // Pour l'instant l'ordre est géré manuellement ou par défaut 0
+                const newCategory = await categoriesApi.create(data);
 
-            const newCategory: Category = {
-                id: generateId('cat'),
-                name: data.name || '',
-                slug: generateSlug(data.name || ''),
-                description: data.description || '',
-                icon: data.icon || '📁',
-                parentId: data.parentId || null,
-                order: categories.filter(c => c.parentId === data.parentId).length,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
+                activityStorage.add({
+                    action: 'create',
+                    entityType: 'category',
+                    entityId: newCategory.id,
+                    entityTitle: newCategory.name,
+                    userId: user?.id || '',
+                    userName: user?.name || '',
+                });
+            }
 
-            categoriesStorage.add(newCategory);
-
-            activityStorage.add({
-                action: 'create',
-                entityType: 'category',
-                entityId: newCategory.id,
-                entityTitle: newCategory.name,
-                userId: user?.id || '',
-                userName: user?.name || '',
-            });
+            await loadData();
+            setFormModal({ isOpen: false });
+        } catch (err) {
+            console.error('Failed to save category:', err);
+            alert('Erreur lors de l\'enregistrement de la catégorie.');
         }
-
-        setCategories(categoriesStorage.getAll());
-        setFormModal({ isOpen: false });
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         if (!deleteModal.category) return;
 
         const categoryToDelete = deleteModal.category;
 
-        // Check if it has subcategories
-        const hasSubcategories = categories.some(c => c.parentId === categoryToDelete.id);
-        if (hasSubcategories) {
-            // Delete subcategories first
-            categories
-                .filter(c => c.parentId === categoryToDelete.id)
-                .forEach(sub => categoriesStorage.delete(sub.id));
+        try {
+            // Check if it has subcategories
+            const hasSubcategories = categories.some(c => c.parentId === categoryToDelete.id);
+            if (hasSubcategories) {
+                // Delete subcategories first
+                // TODO: Idéalement transactionnel ou gérer côté backend
+                const subcategories = categories.filter(c => c.parentId === categoryToDelete.id);
+                for (const sub of subcategories) {
+                    await categoriesApi.delete(sub.id);
+                }
+            }
+
+            await categoriesApi.delete(categoryToDelete.id);
+
+            activityStorage.add({
+                action: 'delete',
+                entityType: 'category',
+                entityId: categoryToDelete.id,
+                entityTitle: categoryToDelete.name,
+                userId: user?.id || '',
+                userName: user?.name || '',
+            });
+
+            await loadData();
+            setDeleteModal({ isOpen: false });
+        } catch (err) {
+            console.error('Failed to delete category:', err);
+            alert('Erreur lors de la suppression de la catégorie.');
         }
-
-        categoriesStorage.delete(categoryToDelete.id);
-
-        activityStorage.add({
-            action: 'delete',
-            entityType: 'category',
-            entityId: categoryToDelete.id,
-            entityTitle: categoryToDelete.name,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
-
-        setCategories(categoriesStorage.getAll());
-        setDeleteModal({ isOpen: false });
     };
 
     // Get parent categories only for the form
@@ -167,6 +184,26 @@ export default function CategoriesPage() {
         }
         return parentCategories;
     }, [parentCategories, formModal.category]);
+
+    if (isLoading) {
+        return (
+            <div className={styles.loading}>
+                <div className={styles.spinner} />
+                <p>Chargement des catégories...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.empty}>
+                    <p>{error}</p>
+                    <Button variant="primary" onClick={() => loadData()}>Réessayer</Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

@@ -8,7 +8,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { coursesStorage, categoriesStorage, activityStorage } from '@/lib/storage';
+import { activityStorage } from '@/lib/storage';
+import { coursesApi } from '@/lib/api/coursesApi';
+import { categoriesApi } from '@/lib/api/categoriesApi';
 import { generateDashboardStats } from '@/lib/mockData';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { Button } from '@/components/ui/Button';
@@ -34,24 +36,57 @@ export default function DashboardPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
     const [trendingCourses, setTrendingCourses] = useState<Course[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Charger les données
-        const loadedCourses = coursesStorage.getAll();
-        const loadedCategories = categoriesStorage.getAll();
-        const loadedActivity = activityStorage.getAll();
+        const loadData = async () => {
+            try {
+                setIsLoading(true);
+                // Charger les données en parallèle
+                const [loadedCourses, loadedCategories] = await Promise.all([
+                    coursesApi.getAll(),
+                    categoriesApi.getAll()
+                ]);
 
-        setCourses(loadedCourses);
-        setCategories(loadedCategories);
-        setRecentActivity(loadedActivity.slice(0, 5));
-        setStats(generateDashboardStats(loadedCourses));
+                // Activity logs restent en local pour l'instant
+                const loadedActivity = activityStorage.getAll();
 
-        // Cours tendances (triés par vues)
-        const trending = [...loadedCourses]
-            .filter(c => c.status === 'published')
-            .sort((a, b) => b.views - a.views)
-            .slice(0, 5);
-        setTrendingCourses(trending);
+                setCourses(loadedCourses);
+                setCategories(loadedCategories);
+                setRecentActivity(loadedActivity.slice(0, 5));
+                setStats(generateDashboardStats(loadedCourses));
+
+                // Cours tendances (triés par vues pour l'instant car enrollments n'est pas encore dans le backend)
+                // Le backend a un endpoint dédié pour ça, on pourrait l'utiliser plus tard
+                const trending = [...loadedCourses]
+                    .filter(c => c.status === 'published')
+                    .sort((a, b) => b.views - a.views)
+                    .slice(0, 5);
+                setTrendingCourses(trending);
+            } catch (err) {
+                console.error('Failed to load dashboard data:', err);
+                setError('Impossible de charger les données du tableau de bord. Vérifiez que le backend est lancé.');
+
+                // Fallback to empty data to avoid crash
+                setCourses([]);
+                setCategories([]);
+                setStats({
+                    totalCourses: 0,
+                    publishedCourses: 0,
+                    draftCourses: 0,
+                    archivedCourses: 0,
+                    totalViews: 0,
+                    totalEnrollments: 0,
+                    averageRating: 0,
+                    coursesThisMonth: 0
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
     }, []);
 
     // Calculer la répartition par catégorie
@@ -67,12 +102,16 @@ export default function DashboardPage() {
     }, [courses, categories]);
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        try {
+            return new Date(dateString).toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        } catch (e) {
+            return dateString;
+        }
     };
 
     const getActionLabel = (action: string) => {
@@ -87,13 +126,31 @@ export default function DashboardPage() {
         return labels[action] || action;
     };
 
-    if (!stats) {
+    if (isLoading) {
         return (
             <div className={styles.loading}>
                 <div className={styles.spinner} />
+                <p>Chargement des données...</p>
             </div>
         );
     }
+
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.errorState}>
+                    <AlertCircleIcon size={48} className={styles.errorIcon} />
+                    <h3>Erreur de connexion</h3>
+                    <p>{error}</p>
+                    <Button variant="primary" onClick={() => window.location.reload()}>
+                        Réessayer
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!stats) return null;
 
     return (
         <div className={styles.container}>
@@ -152,18 +209,6 @@ export default function DashboardPage() {
                         </svg>
                     }
                 />
-                <StatsCard
-                    title="Vues totales"
-                    value={stats.totalViews.toLocaleString('fr-FR')}
-                    variant="secondary"
-                    trend={{ value: 8, isPositive: true, label: 'cette semaine' }}
-                    icon={
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" strokeWidth="2" />
-                            <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="currentColor" strokeWidth="2" />
-                        </svg>
-                    }
-                />
             </section>
 
             {/* Contenu principal */}
@@ -177,23 +222,27 @@ export default function DashboardPage() {
                         </div>
                         <div className={styles.chartContainer}>
                             <div className={styles.barChart}>
-                                {categoryDistribution.map((cat, index) => (
-                                    <div key={index} className={styles.barItem}>
-                                        <div className={styles.barLabel}>
-                                            <span>{cat.name}</span>
-                                            <span className={styles.barValue}>{cat.count}</span>
+                                {categoryDistribution.length > 0 ? (
+                                    categoryDistribution.map((cat, index) => (
+                                        <div key={index} className={styles.barItem}>
+                                            <div className={styles.barLabel}>
+                                                <span>{cat.name}</span>
+                                                <span className={styles.barValue}>{cat.count}</span>
+                                            </div>
+                                            <div className={styles.barTrack}>
+                                                <div
+                                                    className={styles.barFill}
+                                                    style={{
+                                                        width: `${(cat.count / Math.max(...categoryDistribution.map(c => c.count))) * 100}%`,
+                                                        backgroundColor: cat.color,
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className={styles.barTrack}>
-                                            <div
-                                                className={styles.barFill}
-                                                style={{
-                                                    width: `${(cat.count / Math.max(...categoryDistribution.map(c => c.count))) * 100}%`,
-                                                    backgroundColor: cat.color,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))
+                                ) : (
+                                    <p className={styles.emptyState}>Aucune donnée disponible</p>
+                                )}
                             </div>
                         </div>
                     </section>
@@ -207,29 +256,33 @@ export default function DashboardPage() {
                             </Link>
                         </div>
                         <div className={styles.coursesList}>
-                            {trendingCourses.map((course, index) => (
-                                <Link
-                                    key={course.id}
-                                    href={`/dashboard/courses/${course.id}`}
-                                    className={styles.courseItem}
-                                >
-                                    <span className={styles.courseRank}>{index + 1}</span>
-                                    <img
-                                        src={course.thumbnailUrl}
-                                        alt={course.title}
-                                        className={styles.courseThumbnail}
-                                    />
-                                    <div className={styles.courseInfo}>
-                                        <span className={styles.courseTitle}>{course.title}</span>
-                                        <span className={styles.courseStats}>
-                                            {course.views.toLocaleString('fr-FR')} vues • {course.enrollments} inscrits
-                                        </span>
-                                    </div>
-                                    <div className={styles.courseRating}>
-                                        <StarFilledIcon size={16} color="var(--accent-gold)" /> {course.rating}
-                                    </div>
-                                </Link>
-                            ))}
+                            {trendingCourses.length > 0 ? (
+                                trendingCourses.map((course, index) => (
+                                    <Link
+                                        key={course.id}
+                                        href={`/dashboard/courses/${course.id}`}
+                                        className={styles.courseItem}
+                                    >
+                                        <span className={styles.courseRank}>{index + 1}</span>
+                                        <img
+                                            src={course.thumbnailUrl || '/images/defaults/placeholder.jpg'}
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Cours';
+                                            }}
+                                            alt={course.title}
+                                            className={styles.courseThumbnail}
+                                        />
+                                        <div className={styles.courseInfo}>
+                                            <span className={styles.courseTitle}>{course.title}</span>
+                                            <span className={styles.courseStats}>
+                                                {course.views} vues
+                                            </span>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <p className={styles.emptyState}>Aucun cours populaire</p>
+                            )}
                         </div>
                     </section>
                 </div>
@@ -247,10 +300,6 @@ export default function DashboardPage() {
                             <Link href="/dashboard/categories" className={styles.quickAction}>
                                 <span className={styles.quickActionIcon}><FolderIcon size={20} /></span>
                                 <span>Gérer les catégories</span>
-                            </Link>
-                            <Link href="/dashboard/ordering" className={styles.quickAction}>
-                                <span className={styles.quickActionIcon}><OrderingIcon size={20} /></span>
-                                <span>Ordonnancer</span>
                             </Link>
                             <Link href="/dashboard/courses?status=draft" className={styles.quickAction}>
                                 <span className={styles.quickActionIcon}><EditIcon size={20} /></span>
@@ -298,12 +347,8 @@ export default function DashboardPage() {
                         <h3 className={styles.summaryTitle}>Résumé du mois</h3>
                         <div className={styles.summaryStats}>
                             <div className={styles.summaryStat}>
-                                <span className={styles.summaryValue}>{stats.totalEnrollments.toLocaleString('fr-FR')}</span>
-                                <span className={styles.summaryLabel}>Inscriptions totales</span>
-                            </div>
-                            <div className={styles.summaryStat}>
-                                <span className={styles.summaryValue}>{stats.averageRating}</span>
-                                <span className={styles.summaryLabel}>Note moyenne</span>
+                                <span className={styles.summaryValue}>{stats.coursesThisMonth}</span>
+                                <span className={styles.summaryLabel}>Nouveaux cours</span>
                             </div>
                         </div>
                     </section>

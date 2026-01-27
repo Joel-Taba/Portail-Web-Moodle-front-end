@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { authStorage } from '@/lib/storage';
 import { mockUsers } from '@/lib/mockData';
 import type { User, AuthState, LoginCredentials } from '@/lib/types';
@@ -21,21 +21,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [state, setState] = useState<AuthState>({
-        user: null,
-        isAuthenticated: false,
-        isLoading: true,
+        user: {
+            id: '1',
+            email: 'admin@enspy.cm',
+            name: 'Administrateur',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+            avatar: undefined,
+        },
+        isAuthenticated: true,
+        isLoading: false,
     });
 
-    // Vérifier l'authentification au chargement
+    // Auto-login (bypass check)
     const checkAuth = useCallback(() => {
-        const user = authStorage.getUser();
-        setState({
-            user,
-            isAuthenticated: !!user,
-            isLoading: false,
-        });
+        // No-op or reset to default
     }, []);
 
+    // No effect needed for auto-login as state is initialized
+    /*
     useEffect(() => {
         // Simuler un délai de vérification
         const timer = setTimeout(() => {
@@ -43,6 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, 500);
         return () => clearTimeout(timer);
     }, [checkAuth]);
+    */
 
     // Fonction de connexion
     const login = async (credentials: LoginCredentials): Promise<{ success: boolean; error?: string }> => {

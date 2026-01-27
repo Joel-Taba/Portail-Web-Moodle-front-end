@@ -36,7 +36,7 @@ export interface LoginCredentials {
 export type CourseLevel = 'beginner' | 'intermediate' | 'expert';
 export type CourseFormat = 'video' | 'text' | 'exercises' | 'mixed';
 export type CourseLanguage = 'fr' | 'en' | 'other';
-export type CourseType = 'free' | 'paid' | 'certified';
+export type CourseType = 'certified' | 'non-certified';
 export type CourseStatus = 'draft' | 'scheduled' | 'published' | 'archived';
 
 export interface Instructor {
@@ -78,8 +78,20 @@ export interface Course {
   createdBy: string;
 }
 
-export interface CourseFormData extends Omit<Course, 'id' | 'order' | 'views' | 'enrollments' | 'rating' | 'createdAt' | 'updatedAt' | 'createdBy'> {
-  // Type spécifique pour le formulaire de création/modification
+export type CourseFormData = Omit<Course, 'id' | 'order' | 'views' | 'enrollments' | 'rating' | 'createdAt' | 'updatedAt' | 'createdBy'>;
+
+// ============================================
+// Types Élèves (demandes d'inscription)
+// ============================================
+
+export interface Student {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  courseId: string;
+  registrationDate: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 // ============================================

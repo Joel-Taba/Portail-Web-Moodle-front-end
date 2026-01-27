@@ -7,8 +7,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { coursesStorage, categoriesStorage, activityStorage } from '@/lib/storage';
+import { coursesApi } from '@/lib/api/coursesApi';
+import { categoriesApi } from '@/lib/api/categoriesApi';
+import { activityStorage } from '@/lib/storage';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/Modal';
@@ -22,13 +23,12 @@ const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
 export default function CoursesPage() {
     const { user } = useAuth();
-    const searchParams = useSearchParams();
 
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [filters, setFilters] = useState<CourseFiltersType>({
-        status: (searchParams.get('status') || 'all') as CourseFiltersType['status'],
+        status: 'all',
         category: 'all',
         level: 'all',
         type: 'all',
@@ -37,6 +37,8 @@ export default function CoursesPage() {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Modal de confirmation
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; courseId: string; courseTitle: string }>({
@@ -46,9 +48,26 @@ export default function CoursesPage() {
     });
 
     // Charger les données
+    const loadData = async () => {
+        try {
+            setIsLoading(true);
+            const [loadedCourses, loadedCategories] = await Promise.all([
+                coursesApi.getAll(),
+                categoriesApi.getAll()
+            ]);
+            setCourses(loadedCourses);
+            setCategories(loadedCategories);
+            setError(null);
+        } catch (err) {
+            console.error('Failed to load courses data:', err);
+            setError('Impossible de charger les cours.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        setCourses(coursesStorage.getAll());
-        setCategories(categoriesStorage.getAll());
+        loadData();
     }, []);
 
     // Options de catégories pour les filtres
@@ -63,46 +82,50 @@ export default function CoursesPage() {
 
     // Filtrer les cours
     const filteredCourses = useMemo(() => {
-        return courses.filter(course => {
-            // Filtre par recherche
-            if (filters.search) {
-                const searchLower = filters.search.toLowerCase();
-                const matchesTitle = course.title.toLowerCase().includes(searchLower);
-                const matchesTags = course.tags.some(tag => tag.toLowerCase().includes(searchLower));
-                const matchesInstructor = course.instructor.name.toLowerCase().includes(searchLower);
-                if (!matchesTitle && !matchesTags && !matchesInstructor) return false;
-            }
+        return courses
+            // Exclure les cours archivés de cette page (ils sont sur /dashboard/courses/archived)
+            .filter(course => course.status !== 'archived')
+            .filter(course => {
+                // Filtre par recherche
+                if (filters.search) {
+                    const searchLower = filters.search.toLowerCase();
+                    const matchesTitle = course.title.toLowerCase().includes(searchLower);
+                    const matchesTags = course.tags.some(tag => tag.toLowerCase().includes(searchLower));
+                    // Check if instructor exists before accessing name (API data safety)
+                    const matchesInstructor = course.instructor?.name?.toLowerCase().includes(searchLower);
+                    if (!matchesTitle && !matchesTags && !matchesInstructor) return false;
+                }
 
-            // Filtre par statut
-            if (filters.status && filters.status !== 'all' && course.status !== filters.status) {
-                return false;
-            }
+                // Filtre par statut
+                if (filters.status && filters.status !== 'all' && course.status !== filters.status) {
+                    return false;
+                }
 
-            // Filtre par catégorie (inclut les sous-catégories)
-            if (filters.category && filters.category !== 'all') {
-                const courseCategory = categories.find(c => c.id === course.category);
-                const isMatch = course.category === filters.category ||
-                    courseCategory?.parentId === filters.category;
-                if (!isMatch) return false;
-            }
+                // Filtre par catégorie (inclut les sous-catégories)
+                if (filters.category && filters.category !== 'all') {
+                    const courseCategory = categories.find(c => c.id === course.category);
+                    const isMatch = course.category === filters.category ||
+                        courseCategory?.parentId === filters.category;
+                    if (!isMatch) return false;
+                }
 
-            // Filtre par niveau
-            if (filters.level && filters.level !== 'all' && course.level !== filters.level) {
-                return false;
-            }
+                // Filtre par niveau
+                if (filters.level && filters.level !== 'all' && course.level !== filters.level) {
+                    return false;
+                }
 
-            // Filtre par type
-            if (filters.type && filters.type !== 'all' && course.type !== filters.type) {
-                return false;
-            }
+                // Filtre par type
+                if (filters.type && filters.type !== 'all' && course.type !== filters.type) {
+                    return false;
+                }
 
-            // Filtre par format
-            if (filters.format && filters.format !== 'all' && course.format !== filters.format) {
-                return false;
-            }
+                // Filtre par format
+                if (filters.format && filters.format !== 'all' && course.format !== filters.format) {
+                    return false;
+                }
 
-            return true;
-        }).sort((a, b) => a.order - b.order);
+                return true;
+            }).sort((a, b) => a.order - b.order);
     }, [courses, categories, filters]);
 
     // Pagination
@@ -134,22 +157,28 @@ export default function CoursesPage() {
         });
     };
 
-    const handleArchive = (id: string) => {
-        const course = courses.find(c => c.id === id);
-        if (!course) return;
+    const handleArchive = async (id: string) => {
+        try {
+            const course = courses.find(c => c.id === id);
+            if (!course) return;
 
-        coursesStorage.update(id, { status: 'archived' });
-        setCourses(coursesStorage.getAll());
+            await coursesApi.changeStatus(id, 'archived');
 
-        // Log activity
-        activityStorage.add({
-            action: 'archive',
-            entityType: 'course',
-            entityId: id,
-            entityTitle: course.title,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
+            // Log activity
+            activityStorage.add({
+                action: 'archive',
+                entityType: 'course',
+                entityId: id,
+                entityTitle: course.title,
+                userId: user?.id || '',
+                userName: user?.name || '',
+            });
+
+            await loadData(); // Reload to reflect changes
+        } catch (err) {
+            console.error('Failed to archive course:', err);
+            alert('Erreur lors de l\'archivage du cours.');
+        }
     };
 
     const handleDeleteClick = (id: string) => {
@@ -163,24 +192,51 @@ export default function CoursesPage() {
         }
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         const { courseId, courseTitle } = deleteModal;
 
-        coursesStorage.delete(courseId);
-        setCourses(coursesStorage.getAll());
+        try {
+            await coursesApi.delete(courseId);
 
-        // Log activity
-        activityStorage.add({
-            action: 'delete',
-            entityType: 'course',
-            entityId: courseId,
-            entityTitle: courseTitle,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
+            // Log activity
+            activityStorage.add({
+                action: 'delete',
+                entityType: 'course',
+                entityId: courseId,
+                entityTitle: courseTitle,
+                userId: user?.id || '',
+                userName: user?.name || '',
+            });
 
-        setDeleteModal({ isOpen: false, courseId: '', courseTitle: '' });
+            setDeleteModal({ isOpen: false, courseId: '', courseTitle: '' });
+            await loadData();
+        } catch (err) {
+            console.error('Failed to delete course:', err);
+            alert('Erreur lors de la suppression du cours.');
+        }
     };
+
+    if (isLoading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loading}>
+                    <div className={styles.spinner} />
+                    <p>Chargement des cours...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.empty}>
+                    <p>{error}</p>
+                    <Button variant="primary" onClick={() => loadData()}>Réessayer</Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

@@ -13,14 +13,8 @@ export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
-        router.replace('/dashboard');
-      } else {
-        router.replace('/login');
-      }
-    }
-  }, [isAuthenticated, isLoading, router]);
+    router.replace('/dashboard');
+  }, [router]);
 
   // Afficher un écran de chargement pendant la vérification
   return (

@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { EditIcon, DeleteIcon, FolderIcon, getCategoryIcon } from '@/components/icons';
 import type { Category } from '@/lib/types';
 import styles from './CategoryCard.module.css';
 
@@ -34,7 +35,7 @@ export function CategoryCard({
         <div className={styles.card}>
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
-                    <span className={styles.icon}>{category.icon || '📁'}</span>
+                    <span className={styles.icon}>{getCategoryIcon(category.icon || 'folder')}</span>
                     <div className={styles.info}>
                         <h3 className={styles.name}>{category.name}</h3>
                         {category.description && (
@@ -82,7 +83,7 @@ export function CategoryCard({
                             {subcategories.map((sub) => (
                                 <div key={sub.id} className={styles.subcategoryItem}>
                                     <div className={styles.subcategoryInfo}>
-                                        <span className={styles.subcategoryIcon}>{sub.icon || '📂'}</span>
+                                        <span className={styles.subcategoryIcon}>{getCategoryIcon(sub.icon || 'folder', 16)}</span>
                                         <span className={styles.subcategoryName}>{sub.name}</span>
                                     </div>
                                     <div className={styles.subcategoryActions}>
@@ -91,14 +92,14 @@ export function CategoryCard({
                                             onClick={() => onEdit(sub)}
                                             title="Modifier"
                                         >
-                                            ✏️
+                                            <EditIcon size={14} />
                                         </button>
                                         <button
                                             className={`${styles.actionBtn} ${styles.danger}`}
                                             onClick={() => onDelete(sub)}
                                             title="Supprimer"
                                         >
-                                            🗑️
+                                            <DeleteIcon size={14} />
                                         </button>
                                     </div>
                                 </div>
