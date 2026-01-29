@@ -22,11 +22,6 @@ interface CategoryFormProps {
     defaultParentId?: string;
 }
 
-const EMOJI_OPTIONS = [
-    '💻', '🔧', '⚡', '🏗️', '📐', '📊', '🔬', '🧪',
-    '🎓', '📚', '✏️', '🔢', '🌐', '🛡️', '🤖', '📱',
-];
-
 export function CategoryForm({
     isOpen,
     onClose,
@@ -38,7 +33,6 @@ export function CategoryForm({
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        icon: '📁',
         parentId: null as string | null,
         order: 0,
     });
@@ -52,7 +46,6 @@ export function CategoryForm({
                 setFormData({
                     name: category.name,
                     description: category.description || '',
-                    icon: category.icon || '📁',
                     parentId: category.parentId,
                     order: category.order,
                 });
@@ -60,7 +53,6 @@ export function CategoryForm({
                 setFormData({
                     name: '',
                     description: '',
-                    icon: '📁',
                     parentId: defaultParentId || null,
                     order: 0,
                 });
@@ -111,23 +103,6 @@ export function CategoryForm({
             size="md"
         >
             <form onSubmit={handleSubmit} className={styles.form}>
-                {/* Emoji selector */}
-                <div className={styles.fieldGroup}>
-                    <label className={styles.label}>Icône</label>
-                    <div className={styles.emojiGrid}>
-                        {EMOJI_OPTIONS.map(emoji => (
-                            <button
-                                key={emoji}
-                                type="button"
-                                className={`${styles.emojiBtn} ${formData.icon === emoji ? styles.selected : ''}`}
-                                onClick={() => handleChange('icon', emoji)}
-                            >
-                                {emoji}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Name */}
                 <Input
                     label="Nom de la catégorie"

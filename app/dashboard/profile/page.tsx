@@ -241,12 +241,6 @@ export default function ProfilePage() {
                                     <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                 </svg>
                             </Link>
-                            <Link href="/dashboard/history" className={styles.quickLink}>
-                                Historique des activités
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                            </Link>
                         </div>
                     </section>
                 </div>

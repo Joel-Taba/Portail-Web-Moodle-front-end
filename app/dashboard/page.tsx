@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { coursesStorage, categoriesStorage, activityStorage } from '@/lib/storage';
+import { coursesStorage, categoriesStorage } from '@/lib/storage';
 import { generateDashboardStats } from '@/lib/mockData';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { Button } from '@/components/ui/Button';
@@ -24,7 +24,7 @@ import {
     DeleteIcon,
     ChartBarIcon,
 } from '@/components/icons';
-import type { Course, Category, ActivityLog, DashboardStats } from '@/lib/types';
+import type { Course, Category, DashboardStats } from '@/lib/types';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
@@ -32,24 +32,21 @@ export default function DashboardPage() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
     const [trendingCourses, setTrendingCourses] = useState<Course[]>([]);
 
     useEffect(() => {
         // Charger les données
         const loadedCourses = coursesStorage.getAll();
         const loadedCategories = categoriesStorage.getAll();
-        const loadedActivity = activityStorage.getAll();
 
         setCourses(loadedCourses);
         setCategories(loadedCategories);
-        setRecentActivity(loadedActivity.slice(0, 5));
         setStats(generateDashboardStats(loadedCourses));
 
-        // Cours tendances (triés par vues)
+        // Cours tendances (triés par inscriptions)
         const trending = [...loadedCourses]
             .filter(c => c.status === 'published')
-            .sort((a, b) => b.views - a.views)
+            .sort((a, b) => b.enrollments - a.enrollments)
             .slice(0, 5);
         setTrendingCourses(trending);
     }, []);
@@ -102,7 +99,7 @@ export default function DashboardPage() {
                 <div className={styles.headerContent}>
                     <h1 className={styles.title}>Tableau de bord</h1>
                     <p className={styles.subtitle}>
-                        Bienvenue, {user?.name} ! Voici un aperçu de vos cours.
+                        Bienvenue, {user?.name} !
                     </p>
                 </div>
                 <div className={styles.headerActions}>
@@ -152,18 +149,6 @@ export default function DashboardPage() {
                         </svg>
                     }
                 />
-                <StatsCard
-                    title="Vues totales"
-                    value={stats.totalViews.toLocaleString('fr-FR')}
-                    variant="secondary"
-                    trend={{ value: 8, isPositive: true, label: 'cette semaine' }}
-                    icon={
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" strokeWidth="2" />
-                            <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="currentColor" strokeWidth="2" />
-                        </svg>
-                    }
-                />
             </section>
 
             {/* Contenu principal */}
@@ -197,7 +182,10 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </section>
+                </div>
 
+                {/* Colonne droite - Cours populaires et actions */}
+                <div className={styles.rightColumn}>
                     {/* Cours tendances */}
                     <section className={styles.section}>
                         <div className={styles.sectionHeader}>
@@ -222,20 +210,14 @@ export default function DashboardPage() {
                                     <div className={styles.courseInfo}>
                                         <span className={styles.courseTitle}>{course.title}</span>
                                         <span className={styles.courseStats}>
-                                            {course.views.toLocaleString('fr-FR')} vues • {course.enrollments} inscrits
+                                            {course.enrollments} inscrits
                                         </span>
-                                    </div>
-                                    <div className={styles.courseRating}>
-                                        <StarFilledIcon size={16} color="var(--accent-gold)" /> {course.rating}
                                     </div>
                                 </Link>
                             ))}
                         </div>
                     </section>
-                </div>
 
-                {/* Colonne droite */}
-                <div className={styles.rightColumn}>
                     {/* Actions rapides */}
                     <section className={styles.section}>
                         <h2 className={styles.sectionTitle}>Actions rapides</h2>
@@ -248,47 +230,10 @@ export default function DashboardPage() {
                                 <span className={styles.quickActionIcon}><FolderIcon size={20} /></span>
                                 <span>Gérer les catégories</span>
                             </Link>
-                            <Link href="/dashboard/ordering" className={styles.quickAction}>
-                                <span className={styles.quickActionIcon}><OrderingIcon size={20} /></span>
-                                <span>Ordonnancer</span>
-                            </Link>
                             <Link href="/dashboard/courses?status=draft" className={styles.quickAction}>
                                 <span className={styles.quickActionIcon}><EditIcon size={20} /></span>
                                 <span>Brouillons ({stats.draftCourses})</span>
                             </Link>
-                        </div>
-                    </section>
-
-                    {/* Activité récente */}
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Activité récente</h2>
-                        <div className={styles.activityList}>
-                            {recentActivity.length > 0 ? (
-                                recentActivity.map((log) => (
-                                    <div key={log.id} className={styles.activityItem}>
-                                        <div className={styles.activityIcon}>
-                                            {log.action === 'create' && <PlusIcon size={16} />}
-                                            {log.action === 'update' && <EditIcon size={16} />}
-                                            {log.action === 'delete' && <DeleteIcon size={16} />}
-                                            {log.action === 'archive' && <ArchiveIcon size={16} />}
-                                            {log.action === 'publish' && <CheckCircleIcon size={16} />}
-                                        </div>
-                                        <div className={styles.activityContent}>
-                                            <span className={styles.activityAction}>
-                                                {getActionLabel(log.action)}
-                                            </span>
-                                            <span className={styles.activityEntity}>
-                                                {log.entityTitle}
-                                            </span>
-                                            <span className={styles.activityMeta}>
-                                                Par {log.userName} • {formatDate(log.timestamp)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className={styles.emptyState}>Aucune activité récente</p>
-                            )}
                         </div>
                     </section>
 
@@ -300,10 +245,6 @@ export default function DashboardPage() {
                             <div className={styles.summaryStat}>
                                 <span className={styles.summaryValue}>{stats.totalEnrollments.toLocaleString('fr-FR')}</span>
                                 <span className={styles.summaryLabel}>Inscriptions totales</span>
-                            </div>
-                            <div className={styles.summaryStat}>
-                                <span className={styles.summaryValue}>{stats.averageRating}</span>
-                                <span className={styles.summaryLabel}>Note moyenne</span>
                             </div>
                         </div>
                     </section>

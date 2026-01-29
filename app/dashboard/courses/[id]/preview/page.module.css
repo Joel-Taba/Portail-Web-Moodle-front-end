@@ -229,6 +229,39 @@
     font-size: 2.5rem;
 }
 
+/* Teaser Video Preview */
+.teaserVideoPreview {
+    margin-top: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--neutral-100);
+}
+
+.teaserVideo {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+}
+
+.teaserVideoPreview .videoOverlay {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    opacity: 1;
+}
+
+.teaserVideoPreview .videoOverlay a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+    text-decoration: none;
+    gap: var(--spacing-sm);
+}
+
 /* Content */
 .content {
     display: grid;

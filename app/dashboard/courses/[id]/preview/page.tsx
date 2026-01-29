@@ -10,6 +10,16 @@ import { useRouter, useParams } from 'next/navigation';
 import { coursesStorage, categoriesStorage } from '@/lib/storage';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge, LevelBadge, TypeBadge } from '@/components/ui/Badge';
+import {
+    ClockIcon,
+    LanguageIcon,
+    FormatIcon,
+    LevelIcon,
+    TypeLabelIcon,
+    PreviewIcon,
+    UsersIcon,
+    PlayIcon,
+} from '@/components/icons';
 import type { Course, Category } from '@/lib/types';
 import styles from './page.module.css';
 
@@ -78,7 +88,7 @@ export default function CoursePreviewPage() {
                 </div>
                 <div className={styles.toolbarCenter}>
                     <span className={styles.previewLabel}>
-                        👁️ Mode prévisualisation
+                        <PreviewIcon size={16} /> Mode prévisualisation
                     </span>
                 </div>
                 <div className={styles.toolbarRight}>
@@ -111,27 +121,18 @@ export default function CoursePreviewPage() {
                         <div className={styles.metaBadges}>
                             <LevelBadge level={course.level} />
                             <TypeBadge type={course.type} />
-                            <span className={styles.metaItem}>⏱️ {formatDuration(course.duration)}</span>
-                            <span className={styles.metaItem}>🌐 {formatLanguage(course.language)}</span>
-                            <span className={styles.metaItem}>📚 {formatFormat(course.format)}</span>
+                            <span className={styles.metaItem}><ClockIcon size={14} /> {formatDuration(course.duration)}</span>
+                            <span className={styles.metaItem}><LanguageIcon size={14} /> {formatLanguage(course.language)}</span>
+                            <span className={styles.metaItem}><FormatIcon size={14} /> {formatFormat(course.format)}</span>
                         </div>
 
-                        {/* Stats */}
+                        {/* Stats - Only enrollments */}
                         <div className={styles.stats}>
                             <div className={styles.stat}>
-                                <span className={styles.statValue}>{course.views.toLocaleString('fr-FR')}</span>
-                                <span className={styles.statLabel}>vues</span>
-                            </div>
-                            <div className={styles.stat}>
+                                <UsersIcon size={20} />
                                 <span className={styles.statValue}>{course.enrollments}</span>
                                 <span className={styles.statLabel}>inscrits</span>
                             </div>
-                            {course.rating > 0 && (
-                                <div className={styles.stat}>
-                                    <span className={styles.statValue}>⭐ {course.rating}</span>
-                                    <span className={styles.statLabel}>note</span>
-                                </div>
-                            )}
                         </div>
 
                         {/* CTA Button */}
@@ -152,9 +153,27 @@ export default function CoursePreviewPage() {
                             className={styles.thumbnail}
                         />
                         {course.teaserVideoUrl && (
-                            <div className={styles.videoOverlay}>
-                                <span className={styles.playButton}>▶️</span>
-                                <span>Voir la vidéo teaser</span>
+                            <div className={styles.teaserVideoPreview}>
+                                {course.teaserVideoUrl.startsWith('data:video') ? (
+                                    <video
+                                        src={course.teaserVideoUrl}
+                                        controls
+                                        className={styles.teaserVideo}
+                                    />
+                                ) : course.teaserVideoUrl.includes('youtube.com') || course.teaserVideoUrl.includes('youtu.be') ? (
+                                    <div className={styles.videoOverlay}>
+                                        <a href={course.teaserVideoUrl} target="_blank" rel="noopener noreferrer">
+                                            <span className={styles.playButton}><PlayIcon size={32} /></span>
+                                            <span>Voir la vidéo teaser sur YouTube</span>
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <video
+                                        src={course.teaserVideoUrl}
+                                        controls
+                                        className={styles.teaserVideo}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>
@@ -189,17 +208,7 @@ export default function CoursePreviewPage() {
                             </section>
                         )}
 
-                        {/* Tags */}
-                        {course.tags.length > 0 && (
-                            <section className={styles.section}>
-                                <h2>Mots-clés</h2>
-                                <div className={styles.tagsList}>
-                                    {course.tags.map(tag => (
-                                        <span key={tag} className={styles.tag}>#{tag}</span>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+
                     </div>
 
                     <div className={styles.sidebar}>
@@ -227,23 +236,23 @@ export default function CoursePreviewPage() {
                             <h3>Résumé</h3>
                             <ul className={styles.summaryList}>
                                 <li>
-                                    <span className={styles.summaryIcon}>⏱️</span>
+                                    <span className={styles.summaryIcon}><ClockIcon size={16} /></span>
                                     <span>Durée : {formatDuration(course.duration)}</span>
                                 </li>
                                 <li>
-                                    <span className={styles.summaryIcon}>📊</span>
+                                    <span className={styles.summaryIcon}><LevelIcon size={16} /></span>
                                     <span>Niveau : {course.level === 'beginner' ? 'Débutant' : course.level === 'intermediate' ? 'Intermédiaire' : 'Expert'}</span>
                                 </li>
                                 <li>
-                                    <span className={styles.summaryIcon}>🎬</span>
+                                    <span className={styles.summaryIcon}><FormatIcon size={16} /></span>
                                     <span>Format : {formatFormat(course.format)}</span>
                                 </li>
                                 <li>
-                                    <span className={styles.summaryIcon}>🌐</span>
+                                    <span className={styles.summaryIcon}><LanguageIcon size={16} /></span>
                                     <span>Langue : {formatLanguage(course.language)}</span>
                                 </li>
                                 <li>
-                                    <span className={styles.summaryIcon}>🏷️</span>
+                                    <span className={styles.summaryIcon}><TypeLabelIcon size={16} /></span>
                                     <span>Type : {course.type === 'free' ? 'Gratuit' : course.type === 'paid' ? 'Payant' : 'Certifiant'}</span>
                                 </li>
                             </ul>

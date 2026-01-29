@@ -46,6 +46,11 @@ export interface Instructor {
   expertise: string;
 }
 
+export interface SavedInstructor extends Instructor {
+  id: string;
+  createdAt: string;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -78,8 +83,20 @@ export interface Course {
   createdBy: string;
 }
 
-export interface CourseFormData extends Omit<Course, 'id' | 'order' | 'views' | 'enrollments' | 'rating' | 'createdAt' | 'updatedAt' | 'createdBy'> {
-  // Type spécifique pour le formulaire de création/modification
+export type CourseFormData = Omit<Course, 'id' | 'order' | 'views' | 'enrollments' | 'rating' | 'createdAt' | 'updatedAt' | 'createdBy'>;
+
+// ============================================
+// Types Élèves (demandes d'inscription)
+// ============================================
+
+export interface Student {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  courseId: string;
+  registrationDate: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 // ============================================

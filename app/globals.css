@@ -23,17 +23,22 @@
   --primary-800: #9A3412;
   --primary-900: #7C2D12;
 
-  /* Bleu Marine - Couleur secondaire */
-  --secondary-50: #EFF6FF;
-  --secondary-100: #DBEAFE;
-  --secondary-200: #BFDBFE;
-  --secondary-300: #93C5FD;
-  --secondary-400: #60A5FA;
-  --secondary-500: #1A365D;
-  --secondary-600: #1E3A5F;
-  --secondary-700: #1E3A8A;
-  --secondary-800: #1E293B;
-  --secondary-900: #0F172A;
+  /* Noir/Gris - Couleur secondaire (anciennement Bleu Marine) */
+  --secondary-50: #F9FAFB;
+  --secondary-100: #F3F4F6;
+  --secondary-200: #E5E7EB;
+  --secondary-300: #D1D5DB;
+  --secondary-400: #9CA3AF;
+  --secondary-500: #374151;
+  /* Gray 700 */
+  --secondary-600: #1F2937;
+  /* Gray 800 */
+  --secondary-700: #111827;
+  /* Gray 900 */
+  --secondary-800: #030712;
+  /* Gray 950/Black */
+  --secondary-900: #000000;
+  /* Pure Black */
 
   /* Accent Doré */
   --accent-gold: #F6AD55;

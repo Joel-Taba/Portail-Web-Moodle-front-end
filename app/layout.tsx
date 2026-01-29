@@ -24,13 +24,13 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.variable}>
-        <ThemeProvider>
-          <I18nProvider>
-            <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <I18nProvider>
               {children}
-            </AuthProvider>
-          </I18nProvider>
-        </ThemeProvider>
+            </I18nProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -8,8 +8,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -60,29 +58,6 @@ export function Header({ title, onMenuClick }: HeaderProps) {
 
             {/* Actions */}
             <div className={styles.actions}>
-                {/* Theme Switcher */}
-                <ThemeSwitcher />
-
-                {/* Language Switcher */}
-                <LanguageSwitcher />
-
-                {/* Notifications */}
-                <button className={styles.iconButton} aria-label="Notifications">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path
-                            d="M10 2C7.23858 2 5 4.23858 5 7V10.5858L3.29289 12.2929C3.00689 12.5789 2.92134 13.009 3.07612 13.3827C3.2309 13.7564 3.59554 14 4 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L15 10.5858V7C15 4.23858 12.7614 2 10 2Z"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                        />
-                        <path
-                            d="M8 14V15C8 16.1046 8.89543 17 10 17C11.1046 17 12 16.1046 12 15V14"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                        />
-                    </svg>
-                    <span className={styles.notificationDot} />
-                </button>
-
                 {/* Profil utilisateur */}
                 <div className={styles.profileContainer} ref={dropdownRef}>
                     <button

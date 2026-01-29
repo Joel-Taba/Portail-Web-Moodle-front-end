@@ -6,17 +6,14 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { categoriesStorage, coursesStorage, activityStorage, generateId } from '@/lib/storage';
+import { categoriesStorage, coursesStorage, generateId } from '@/lib/storage';
 import { Button } from '@/components/ui/Button';
-import { ConfirmModal } from '@/components/ui/Modal';
 import { CategoryCard } from '@/components/categories/CategoryCard';
 import { CategoryForm } from '@/components/categories/CategoryForm';
 import type { Category } from '@/lib/types';
 import styles from './page.module.css';
 
 export default function CategoriesPage() {
-    const { user } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
     const [courses, setCourses] = useState<{ category: string }[]>([]);
 
@@ -25,14 +22,6 @@ export default function CategoriesPage() {
         isOpen: boolean;
         category?: Category;
         defaultParentId?: string;
-    }>({
-        isOpen: false,
-    });
-
-    // Delete modal state
-    const [deleteModal, setDeleteModal] = useState<{
-        isOpen: boolean;
-        category?: Category;
     }>({
         isOpen: false,
     });
@@ -77,23 +66,10 @@ export default function CategoriesPage() {
         setFormModal({ isOpen: true, category });
     };
 
-    const handleDelete = (category: Category) => {
-        setDeleteModal({ isOpen: true, category });
-    };
-
     const handleFormSubmit = (data: Partial<Category>) => {
         if (formModal.category) {
             // Update existing
             categoriesStorage.update(formModal.category.id, data);
-
-            activityStorage.add({
-                action: 'update',
-                entityType: 'category',
-                entityId: formModal.category.id,
-                entityTitle: data.name || formModal.category.name,
-                userId: user?.id || '',
-                userName: user?.name || '',
-            });
         } else {
             // Create new - generate slug from name
             const generateSlug = (name: string) =>
@@ -107,7 +83,6 @@ export default function CategoriesPage() {
                 name: data.name || '',
                 slug: generateSlug(data.name || ''),
                 description: data.description || '',
-                icon: data.icon || '📁',
                 parentId: data.parentId || null,
                 order: categories.filter(c => c.parentId === data.parentId).length,
                 createdAt: new Date().toISOString(),
@@ -115,49 +90,12 @@ export default function CategoriesPage() {
             };
 
             categoriesStorage.add(newCategory);
-
-            activityStorage.add({
-                action: 'create',
-                entityType: 'category',
-                entityId: newCategory.id,
-                entityTitle: newCategory.name,
-                userId: user?.id || '',
-                userName: user?.name || '',
-            });
         }
 
         setCategories(categoriesStorage.getAll());
         setFormModal({ isOpen: false });
     };
 
-    const handleDeleteConfirm = () => {
-        if (!deleteModal.category) return;
-
-        const categoryToDelete = deleteModal.category;
-
-        // Check if it has subcategories
-        const hasSubcategories = categories.some(c => c.parentId === categoryToDelete.id);
-        if (hasSubcategories) {
-            // Delete subcategories first
-            categories
-                .filter(c => c.parentId === categoryToDelete.id)
-                .forEach(sub => categoriesStorage.delete(sub.id));
-        }
-
-        categoriesStorage.delete(categoryToDelete.id);
-
-        activityStorage.add({
-            action: 'delete',
-            entityType: 'category',
-            entityId: categoryToDelete.id,
-            entityTitle: categoryToDelete.name,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
-
-        setCategories(categoriesStorage.getAll());
-        setDeleteModal({ isOpen: false });
-    };
 
     // Get parent categories only for the form
     const formParentCategories = useMemo(() => {
@@ -197,7 +135,6 @@ export default function CategoriesPage() {
                             subcategories={getSubcategories(category.id)}
                             courseCount={getCourseCount(category.id)}
                             onEdit={handleEdit}
-                            onDelete={handleDelete}
                             onAddSubcategory={handleAddSubcategory}
                         />
                     ))}
@@ -221,22 +158,6 @@ export default function CategoriesPage() {
                 category={formModal.category}
                 parentCategories={formParentCategories}
                 defaultParentId={formModal.defaultParentId}
-            />
-
-            {/* Delete Confirmation Modal */}
-            <ConfirmModal
-                isOpen={deleteModal.isOpen}
-                onClose={() => setDeleteModal({ isOpen: false })}
-                onConfirm={handleDeleteConfirm}
-                title="Supprimer la catégorie ?"
-                message={
-                    deleteModal.category?.parentId === null
-                        ? `Êtes-vous sûr de vouloir supprimer "${deleteModal.category?.name}" et toutes ses sous-catégories ? Les cours associés ne seront pas supprimés.`
-                        : `Êtes-vous sûr de vouloir supprimer "${deleteModal.category?.name}" ? Les cours associés ne seront pas supprimés.`
-                }
-                confirmLabel="Supprimer"
-                cancelLabel="Annuler"
-                variant="danger"
             />
         </div>
     );

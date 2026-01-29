@@ -197,3 +197,83 @@
     border-color: var(--error-200);
     color: var(--error-600);
 }
+
+/* URLs Section */
+.urls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    padding-top: var(--spacing-sm);
+}
+
+.urlLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-xs);
+    color: var(--primary-500);
+    text-decoration: none;
+    padding: 4px 8px;
+    background: var(--primary-50);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.urlLink:hover {
+    background: var(--primary-100);
+    color: var(--primary-700);
+}
+
+/* Teaser Preview */
+.teaserPreview {
+    position: relative;
+    width: 100%;
+    margin-top: var(--spacing-xs);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--neutral-100);
+}
+
+.teaserPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.teaserOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background var(--transition-fast);
+}
+
+.teaserPreview:hover .teaserOverlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.playButton {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-full);
+    color: var(--primary-500);
+    transition: transform var(--transition-fast);
+}
+
+.teaserPreview:hover .playButton {
+    transform: scale(1.1);
+}

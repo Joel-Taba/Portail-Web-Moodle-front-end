@@ -5,10 +5,10 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { coursesStorage, categoriesStorage, activityStorage } from '@/lib/storage';
+import { coursesStorage, categoriesStorage } from '@/lib/storage';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/Modal';
@@ -20,7 +20,7 @@ import styles from './page.module.css';
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
-export default function CoursesPage() {
+function CoursesPageContent() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
 
@@ -57,52 +57,83 @@ export default function CoursesPage() {
             .filter(c => c.parentId === null)
             .map(c => ({
                 value: c.id,
-                label: `${c.icon || ''} ${c.name}`.trim(),
+                label: c.name,
             }));
     }, [categories]);
 
     // Filtrer les cours
     const filteredCourses = useMemo(() => {
-        return courses.filter(course => {
-            // Filtre par recherche
-            if (filters.search) {
-                const searchLower = filters.search.toLowerCase();
-                const matchesTitle = course.title.toLowerCase().includes(searchLower);
-                const matchesTags = course.tags.some(tag => tag.toLowerCase().includes(searchLower));
-                const matchesInstructor = course.instructor.name.toLowerCase().includes(searchLower);
-                if (!matchesTitle && !matchesTags && !matchesInstructor) return false;
-            }
+        return courses
+            // Exclure les cours archivés de cette page (ils sont sur /dashboard/courses/archived)
+            .filter(course => course.status !== 'archived')
+            .filter(course => {
+                // Filtre par recherche
+                if (filters.search) {
+                    const searchLower = filters.search.toLowerCase();
+                    const matchesTitle = course.title.toLowerCase().includes(searchLower);
+                    const matchesInstructor = course.instructor.name.toLowerCase().includes(searchLower);
+                    if (!matchesTitle && !matchesInstructor) return false;
+                }
 
-            // Filtre par statut
-            if (filters.status && filters.status !== 'all' && course.status !== filters.status) {
-                return false;
-            }
+                // Filtre par statut
+                if (filters.status && filters.status !== 'all' && course.status !== filters.status) {
+                    return false;
+                }
 
-            // Filtre par catégorie (inclut les sous-catégories)
-            if (filters.category && filters.category !== 'all') {
-                const courseCategory = categories.find(c => c.id === course.category);
-                const isMatch = course.category === filters.category ||
-                    courseCategory?.parentId === filters.category;
-                if (!isMatch) return false;
-            }
+                // Filtre par catégorie (inclut les sous-catégories)
+                if (filters.category && filters.category !== 'all') {
+                    const courseCategory = categories.find(c => c.id === course.category);
+                    const isMatch = course.category === filters.category ||
+                        courseCategory?.parentId === filters.category;
+                    if (!isMatch) return false;
+                }
 
-            // Filtre par niveau
-            if (filters.level && filters.level !== 'all' && course.level !== filters.level) {
-                return false;
-            }
+                // Filtre par niveau
+                if (filters.level && filters.level !== 'all' && course.level !== filters.level) {
+                    return false;
+                }
 
-            // Filtre par type
-            if (filters.type && filters.type !== 'all' && course.type !== filters.type) {
-                return false;
-            }
+                // Filtre par type
+                if (filters.type && filters.type !== 'all') {
+                    if ((filters.type as string) === 'non-certified') {
+                        // "Non certifiant" matches everything NOT certified (e.g. free, paid)
+                        if (course.type === 'certified') return false;
+                    } else if ((course.type as string) !== filters.type) {
+                        return false;
+                    }
+                }
 
-            // Filtre par format
-            if (filters.format && filters.format !== 'all' && course.format !== filters.format) {
-                return false;
-            }
+                // Ensure only allowed types are shown generally (Certifiant / Non certifiant)
+                // Assuming data might have old types, we might want to strict filter or just rely on the UI filter options
+                // But user said "supprime tous les autres types qui existent", implies data cleanup or strict filter.
+                // I'll strictly filter for only 'certified' (Certifiant) and 'free'/'paid' (Non certifiant??). 
+                // Wait, user said "Certifiant" and "Non certifiant". 
+                // My types are 'free' | 'paid' | 'certified'. 
+                // I should probably map 'free'/'paid' to "Non certifiant" UI-wise, or strictly allow only 'certified' and some 'non-certified' type.
+                // Let's assume 'free' and 'paid' are "Non certifiant" for now, or I should update the types?
+                // "supprime tous les autres types" -> implies I should maybe consolidate 'free'/'paid' into 'standard' or similar?
+                // Or just filter.
+                // User said: "Concernant egalement le type de cours, les types que je souhaite sont "Certifiant" et "Non certifiant", supprime tous les autres types qui existent."
+                // This is a data/type change. 
+                // For now, I will treat 'certified' as Certifiant. 
+                // 'free' and 'paid' -> I will treat as "Non certifiant".
+                // Actually, I should check `CourseFilters` options.
+                // Only 'certified' and 'non-certified' (new type?)
+                // I'll stick to 'certified' and 'free' (as non-certifiant) for now, or better, add 'non-certified' to types if possible, but types.ts is shared.
+                // Let's check `CourseFilters.tsx` in a moment. For `page.tsx`, I'll leave the logic generic but I need to make sure the data corresponds.
 
-            return true;
-        }).sort((a, b) => a.order - b.order);
+                // Actually, the user wants me to REMOVE other types.
+                // This might mean I should update the `CourseFilters` options to ONLY show these two.
+                // And in `page.tsx`, I don't need to change much unless I restrict the data.
+                // I'll just keep the existing filter logic here.
+
+                // Filtre par format
+                if (filters.format && filters.format !== 'all' && course.format !== filters.format) {
+                    return false;
+                }
+
+                return true;
+            }).sort((a, b) => a.order - b.order);
     }, [courses, categories, filters]);
 
     // Pagination
@@ -140,16 +171,6 @@ export default function CoursesPage() {
 
         coursesStorage.update(id, { status: 'archived' });
         setCourses(coursesStorage.getAll());
-
-        // Log activity
-        activityStorage.add({
-            action: 'archive',
-            entityType: 'course',
-            entityId: id,
-            entityTitle: course.title,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
     };
 
     const handleDeleteClick = (id: string) => {
@@ -164,20 +185,10 @@ export default function CoursesPage() {
     };
 
     const handleDeleteConfirm = () => {
-        const { courseId, courseTitle } = deleteModal;
+        const { courseId } = deleteModal;
 
         coursesStorage.delete(courseId);
         setCourses(coursesStorage.getAll());
-
-        // Log activity
-        activityStorage.add({
-            action: 'delete',
-            entityType: 'course',
-            entityId: courseId,
-            entityTitle: courseTitle,
-            userId: user?.id || '',
-            userName: user?.name || '',
-        });
 
         setDeleteModal({ isOpen: false, courseId: '', courseTitle: '' });
     };
@@ -189,7 +200,7 @@ export default function CoursesPage() {
                 <div className={styles.headerContent}>
                     <h1 className={styles.title}>Gestion des cours</h1>
                     <p className={styles.subtitle}>
-                        {filteredCourses.length} cours trouvé{filteredCourses.length > 1 ? 's' : ''}
+                        {filteredCourses.length} cours
                     </p>
                 </div>
                 <div className={styles.headerActions}>
@@ -333,5 +344,17 @@ export default function CoursesPage() {
                 variant="danger"
             />
         </div>
+    );
+}
+
+export default function CoursesPage() {
+    return (
+        <Suspense fallback={
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                <p>Chargement...</p>
+            </div>
+        }>
+            <CoursesPageContent />
+        </Suspense>
     );
 }

@@ -5,12 +5,22 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import type { Course, Category, CourseLevel, CourseFormat, CourseLanguage, CourseType, CourseStatus } from '@/lib/types';
+import { instructorsStorage } from '@/lib/storage';
+import { InstructorModal } from './InstructorModal';
+import {
+    DocumentIcon,
+    TagIcon,
+    BookStackIcon,
+    GearIcon,
+    InstructorIcon,
+    ImageIcon,
+    LinkIcon,
+} from '@/components/icons';
+import type { Course, Category, CourseLevel, CourseFormat, CourseLanguage, CourseType, CourseStatus, SavedInstructor, Instructor } from '@/lib/types';
 import styles from './CourseForm.module.css';
 
 interface CourseFormProps {
@@ -35,12 +45,16 @@ export function CourseForm({
     onCancel,
     isLoading = false,
 }: CourseFormProps) {
+    const [instructors, setInstructors] = useState<SavedInstructor[]>([]);
+    const [showInstructorModal, setShowInstructorModal] = useState(false);
+    const [selectedInstructorId, setSelectedInstructorId] = useState<string>('');
+
     const [formData, setFormData] = useState({
         title: course?.title || '',
         shortDescription: course?.shortDescription || '',
         longDescription: course?.longDescription || '',
         category: course?.category || '',
-        tags: course?.tags || [],
+        tags: [] as string[],
         level: course?.level || 'beginner' as CourseLevel,
         duration: course?.duration || 1,
         format: course?.format || 'mixed' as CourseFormat,
@@ -53,12 +67,42 @@ export function CourseForm({
         thumbnailUrl: course?.thumbnailUrl || '',
         teaserVideoUrl: course?.teaserVideoUrl || '',
         redirectUrl: course?.redirectUrl || '',
-        isFeatured: course?.isFeatured || false,
-        isTrending: course?.isTrending || false,
+        isFeatured: false,
+        isTrending: false,
     });
 
-    const [tagInput, setTagInput] = useState('');
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Load instructors on mount
+    useEffect(() => {
+        setInstructors(instructorsStorage.getAll());
+        // If editing and instructor exists, find matching instructor ID
+        if (course?.instructor?.name) {
+            const existingInstructors = instructorsStorage.getAll();
+            const match = existingInstructors.find(i => i.name === course.instructor.name);
+            if (match) {
+                setSelectedInstructorId(match.id);
+            }
+        }
+    }, [course]);
+
+    // Update instructor when selection changes
+    useEffect(() => {
+        if (selectedInstructorId) {
+            const instructor = instructors.find(i => i.id === selectedInstructorId);
+            if (instructor) {
+                setFormData(prev => ({
+                    ...prev,
+                    instructor: {
+                        name: instructor.name,
+                        photo: instructor.photo,
+                        bio: instructor.bio,
+                        expertise: instructor.expertise,
+                    },
+                }));
+            }
+        }
+    }, [selectedInstructorId, instructors]);
 
     // Options pour les selects
     const categoryOptions = categories
@@ -80,7 +124,6 @@ export function CourseForm({
     const formatOptions = [
         { value: 'video', label: 'Vidéo' },
         { value: 'text', label: 'Texte' },
-        { value: 'exercises', label: 'Exercices' },
         { value: 'mixed', label: 'Mixte' },
     ];
 
@@ -111,34 +154,40 @@ export function CourseForm({
         }
     };
 
-    const handleInstructorChange = (field: string, value: string) => {
-        setFormData(prev => ({
-            ...prev,
-            instructor: { ...prev.instructor, [field]: value },
-        }));
-    };
-
-    const handleAddTag = () => {
-        const tag = tagInput.trim().toLowerCase();
-        if (tag && !formData.tags.includes(tag)) {
-            setFormData(prev => ({ ...prev, tags: [...prev.tags, tag] }));
-            setTagInput('');
+    // File upload handlers - convert to base64 data URL
+    const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleChange('thumbnailUrl', reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    const handleRemoveTag = (tagToRemove: string) => {
-        setFormData(prev => ({
-            ...prev,
-            tags: prev.tags.filter(t => t !== tagToRemove),
-        }));
-    };
-
-    const handleTagKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleAddTag();
+    const handleTeaserVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleChange('teaserVideoUrl', reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
+
+    const handleCreateInstructor = (data: { name: string; photo: string; expertise: string; bio: string }) => {
+        const newInstructor = instructorsStorage.add(data);
+        setInstructors(instructorsStorage.getAll());
+        setSelectedInstructorId(newInstructor.id);
+    };
+
+    // Instructor options for select
+    const instructorOptions = instructors.map(i => ({
+        value: i.id,
+        label: i.name,
+    }));
 
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
@@ -178,7 +227,7 @@ export function CourseForm({
             {/* Section : Informations de base */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>📝</span>
+                    <span className={styles.sectionIcon}><DocumentIcon size={20} /></span>
                     Informations de base
                 </h2>
 
@@ -225,7 +274,7 @@ export function CourseForm({
             {/* Section : Classification */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🏷️</span>
+                    <span className={styles.sectionIcon}><TagIcon size={20} /></span>
                     Classification
                 </h2>
 
@@ -248,37 +297,12 @@ export function CourseForm({
                         fullWidth
                     />
                 </div>
-
-                <div className={styles.fieldGroup}>
-                    <label className={styles.label}>Tags / Mots-clés</label>
-                    <div className={styles.tagsInput}>
-                        <Input
-                            placeholder="Ajouter un tag et appuyer sur Entrée"
-                            value={tagInput}
-                            onChange={(e) => setTagInput(e.target.value)}
-                            onKeyDown={handleTagKeyDown}
-                            fullWidth
-                        />
-                        <Button type="button" variant="outline" size="sm" onClick={handleAddTag}>
-                            Ajouter
-                        </Button>
-                    </div>
-                    {formData.tags.length > 0 && (
-                        <div className={styles.tagsList}>
-                            {formData.tags.map(tag => (
-                                <Badge key={tag} variant="primary" removable onRemove={() => handleRemoveTag(tag)}>
-                                    {tag}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
-                </div>
             </section>
 
             {/* Section : Détails pédagogiques */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>📚</span>
+                    <span className={styles.sectionIcon}><BookStackIcon size={20} /></span>
                     Détails pédagogiques
                 </h2>
 
@@ -339,7 +363,7 @@ export function CourseForm({
             {/* Section : Type et statut */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>⚙️</span>
+                    <span className={styles.sectionIcon}><GearIcon size={20} /></span>
                     Type et statut
                 </h2>
 
@@ -359,98 +383,108 @@ export function CourseForm({
                         fullWidth
                     />
                 </div>
-
-                <div className={styles.checkboxGroup}>
-                    <label className={styles.checkbox}>
-                        <input
-                            type="checkbox"
-                            checked={formData.isFeatured}
-                            onChange={(e) => handleChange('isFeatured', e.target.checked)}
-                        />
-                        <span>⭐ Mettre en vedette (À la une)</span>
-                    </label>
-                    <label className={styles.checkbox}>
-                        <input
-                            type="checkbox"
-                            checked={formData.isTrending}
-                            onChange={(e) => handleChange('isTrending', e.target.checked)}
-                        />
-                        <span>🔥 Marquer comme Tendance</span>
-                    </label>
-                </div>
             </section>
 
             {/* Section : Instructeur */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>👨‍🏫</span>
+                    <span className={styles.sectionIcon}><InstructorIcon size={20} /></span>
                     Instructeur
                 </h2>
 
                 <div className={styles.row}>
-                    <Input
-                        label="Nom de l'instructeur"
-                        placeholder="Dr. Jean Dupont"
-                        value={formData.instructor.name}
-                        onChange={(e) => handleInstructorChange('name', e.target.value)}
+                    <Select
+                        label="Sélectionner un instructeur"
+                        options={instructorOptions}
+                        value={selectedInstructorId}
+                        onChange={(value) => setSelectedInstructorId(value)}
+                        placeholder="Choisir un instructeur existant"
                         error={errors.instructorName}
-                        required
                         fullWidth
                     />
-                    <Input
-                        label="Photo (URL)"
-                        placeholder="https://..."
-                        value={formData.instructor.photo}
-                        onChange={(e) => handleInstructorChange('photo', e.target.value)}
-                        fullWidth
-                    />
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>&nbsp;</label>
+                        <Button type="button" variant="outline" onClick={() => setShowInstructorModal(true)}>
+                            + Nouvel instructeur
+                        </Button>
+                    </div>
                 </div>
 
-                <div className={styles.fieldGroup}>
-                    <Input
-                        label="Expertise"
-                        placeholder="Ex: Machine Learning, Python, Data Science"
-                        value={formData.instructor.expertise}
-                        onChange={(e) => handleInstructorChange('expertise', e.target.value)}
-                        fullWidth
-                    />
-                </div>
-
-                <div className={styles.fieldGroup}>
-                    <label className={styles.label}>Bio courte</label>
-                    <textarea
-                        className={styles.textarea}
-                        placeholder="Présentez brièvement l'instructeur..."
-                        value={formData.instructor.bio}
-                        onChange={(e) => handleInstructorChange('bio', e.target.value)}
-                        rows={3}
-                    />
-                </div>
+                {selectedInstructorId && formData.instructor.name && (
+                    <div className={styles.instructorPreview}>
+                        {formData.instructor.photo && (
+                            <img
+                                src={formData.instructor.photo}
+                                alt={formData.instructor.name}
+                                className={styles.instructorPhoto}
+                            />
+                        )}
+                        <div className={styles.instructorInfo}>
+                            <strong>{formData.instructor.name}</strong>
+                            <span>{formData.instructor.expertise}</span>
+                        </div>
+                    </div>
+                )}
             </section>
+
+            <InstructorModal
+                isOpen={showInstructorModal}
+                onClose={() => setShowInstructorModal(false)}
+                onSubmit={handleCreateInstructor}
+            />
 
             {/* Section : Médias */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🖼️</span>
+                    <span className={styles.sectionIcon}><ImageIcon size={20} /></span>
                     Médias
                 </h2>
 
                 <div className={styles.row}>
-                    <Input
-                        label="Image miniature (URL)"
-                        placeholder="https://..."
-                        value={formData.thumbnailUrl}
-                        onChange={(e) => handleChange('thumbnailUrl', e.target.value)}
-                        hint="Image 16:9 recommandée (ex: 800x450px)"
-                        fullWidth
-                    />
-                    <Input
-                        label="Vidéo teaser (URL YouTube/Vimeo)"
-                        placeholder="https://youtube.com/watch?v=..."
-                        value={formData.teaserVideoUrl}
-                        onChange={(e) => handleChange('teaserVideoUrl', e.target.value)}
-                        fullWidth
-                    />
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Image miniature</label>
+                        <Input
+                            placeholder="https://... (URL de l'image)"
+                            value={formData.thumbnailUrl.startsWith('data:') ? '' : formData.thumbnailUrl}
+                            onChange={(e) => handleChange('thumbnailUrl', e.target.value)}
+                            fullWidth
+                        />
+                        <div className={styles.fileUploadRow}>
+                            <span className={styles.orSeparator}>ou</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleThumbnailUpload}
+                                className={styles.fileInput}
+                                id="thumbnail-upload"
+                            />
+                            <label htmlFor="thumbnail-upload" className={styles.fileLabel}>
+                                Choisir un fichier
+                            </label>
+                        </div>
+                    </div>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Vidéo teaser</label>
+                        <Input
+                            placeholder="https://youtube.com/watch?v=... (URL)"
+                            value={formData.teaserVideoUrl.startsWith('data:') ? '' : formData.teaserVideoUrl}
+                            onChange={(e) => handleChange('teaserVideoUrl', e.target.value)}
+                            fullWidth
+                        />
+                        <div className={styles.fileUploadRow}>
+                            <span className={styles.orSeparator}>ou</span>
+                            <input
+                                type="file"
+                                accept="video/*"
+                                onChange={handleTeaserVideoUpload}
+                                className={styles.fileInput}
+                                id="teaser-video-upload"
+                            />
+                            <label htmlFor="teaser-video-upload" className={styles.fileLabel}>
+                                Choisir une vidéo
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 {formData.thumbnailUrl && (
@@ -470,7 +504,7 @@ export function CourseForm({
             {/* Section : Redirection */}
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <span className={styles.sectionIcon}>🔗</span>
+                    <span className={styles.sectionIcon}><LinkIcon size={20} /></span>
                     Redirection
                 </h2>
 

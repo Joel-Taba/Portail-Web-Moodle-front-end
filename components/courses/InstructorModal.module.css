@@ -1,0 +1,98 @@
+/* InstructorModal Styles */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--neutral-700);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.optional {
+    font-weight: var(--font-weight-normal);
+    color: var(--neutral-500);
+}
+
+.textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color var(--transition-fast);
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.fileUploadRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+}
+
+.orSeparator {
+    font-size: var(--font-size-sm);
+    color: var(--neutral-500);
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--neutral-100);
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--neutral-700);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.fileLabel:hover {
+    background: var(--neutral-200);
+    border-color: var(--neutral-400);
+}
+
+.photoPreview {
+    margin-top: var(--spacing-sm);
+}
+
+.photoPreview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--neutral-200);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--neutral-200);
+}

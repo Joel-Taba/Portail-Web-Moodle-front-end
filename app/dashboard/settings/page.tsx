@@ -5,11 +5,17 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { coursesStorage, categoriesStorage, activityStorage } from '@/lib/storage';
+import React, { useState, useEffect } from 'react';
+import { coursesStorage, categoriesStorage, studentsStorage } from '@/lib/storage';
+import { exportToPDF } from '@/lib/exportUtils';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
-import type { Course, Category, ActivityLog } from '@/lib/types';
+import {
+    CoursesIcon, CategoriesIcon, ArchiveIcon,
+    ChartBarIcon, DownloadIcon, JSONIcon, CSVIcon, PDFIcon, CheckCircleIcon, StudentsIcon
+} from '@/components/icons';
+import type { Course, Category, Student } from '@/lib/types';
 import styles from './page.module.css';
 
 export default function SettingsPage() {
@@ -60,6 +66,25 @@ export default function SettingsPage() {
         setTimeout(() => setExportStatus(null), 3000);
     };
 
+    const handleExportPDF = (type: 'courses' | 'categories') => {
+        try {
+            if (type === 'courses') {
+                const data = coursesStorage.getAll();
+                const columns = ['title', 'category', 'status', 'enrollments', 'instructor'];
+                exportToPDF(data as any, columns, 'Liste des Cours', 'enspy_courses');
+            } else if (type === 'categories') {
+                const data = categoriesStorage.getAll();
+                const columns = ['name', 'slug', 'courseCount'];
+                exportToPDF(data as any, columns, 'Liste des Catégories', 'enspy_categories');
+            }
+            setExportStatus(`Export PDF réussi !`);
+        } catch (error) {
+            console.error(error);
+            setExportStatus(`Erreur lors de l'export PDF`);
+        }
+        setTimeout(() => setExportStatus(null), 3000);
+    };
+
     // Handlers
     const handleExportCourses = (format: 'json' | 'csv') => {
         const courses = coursesStorage.getAll();
@@ -85,30 +110,83 @@ export default function SettingsPage() {
         }
     };
 
-    const handleExportActivity = (format: 'json' | 'csv') => {
-        const activities = activityStorage.getAll();
-        if (format === 'json') {
-            exportToJSON(activities, 'enspy_activity');
-        } else {
-            exportToCSV(activities as unknown as Record<string, unknown>[], 'enspy_activity');
-        }
-    };
-
     const handleExportAll = () => {
         const data = {
             exportedAt: new Date().toISOString(),
             courses: coursesStorage.getAll(),
             categories: categoriesStorage.getAll(),
-            activityLogs: activityStorage.getAll(),
         };
         exportToJSON(data, 'enspy_backup');
     };
 
-    const handleClearData = () => {
-        if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données ? Cette action est irréversible.')) {
-            localStorage.clear();
-            window.location.reload();
+
+
+    // State for student export
+    const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [studentCount, setStudentCount] = useState<number>(0);
+
+    useEffect(() => {
+        const loadedCourses = coursesStorage.getAll().filter(c => c.status === 'published');
+        setCourses(loadedCourses);
+
+        // Initialize mock student data if needed
+        if (loadedCourses.length > 0) {
+            studentsStorage.initializeWithMockData(loadedCourses.map(c => c.id));
         }
+    }, []);
+
+    useEffect(() => {
+        if (selectedCourseId) {
+            const students = studentsStorage.getPendingByCourseId(selectedCourseId);
+            setStudentCount(students.length);
+        } else {
+            setStudentCount(0);
+        }
+    }, [selectedCourseId]);
+
+    const courseOptions = courses.map(c => ({
+        value: c.id,
+        label: c.title,
+    }));
+
+    const handleExportStudents = (format: 'json' | 'csv') => {
+        if (!selectedCourseId) {
+            setExportStatus('Veuillez sélectionner un cours');
+            setTimeout(() => setExportStatus(null), 3000);
+            return;
+        }
+
+        const students = studentsStorage.getPendingByCourseId(selectedCourseId);
+        const course = courses.find(c => c.id === selectedCourseId);
+        const courseName = course?.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() || 'cours';
+
+        if (format === 'json') {
+            exportToJSON(students, `eleves_${courseName}`);
+        } else {
+            exportToCSV(students as unknown as Record<string, unknown>[], `eleves_${courseName}`);
+        }
+    };
+
+    const handleExportStudentsPDF = () => {
+        if (!selectedCourseId) {
+            setExportStatus('Veuillez sélectionner un cours');
+            setTimeout(() => setExportStatus(null), 3000);
+            return;
+        }
+
+        try {
+            const students = studentsStorage.getPendingByCourseId(selectedCourseId);
+            const course = courses.find(c => c.id === selectedCourseId);
+            const courseName = course?.title || 'Cours';
+            const columns = ['name', 'email', 'phone', 'registrationDate', 'status'];
+            exportToPDF(students as any, columns, `Liste des élèves - ${courseName}`, `eleves_${courseName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}`);
+            setExportStatus('Export PDF réussi !');
+        } catch (error) {
+            console.error(error);
+            setExportStatus('Erreur lors de l\'export PDF');
+        }
+        setTimeout(() => setExportStatus(null), 3000);
     };
 
     return (
@@ -124,7 +202,7 @@ export default function SettingsPage() {
             {/* Status message */}
             {exportStatus && (
                 <div className={styles.statusMessage}>
-                    ✅ {exportStatus}
+                    <CheckCircleIcon size={16} /> {exportStatus}
                 </div>
             )}
 
@@ -133,7 +211,9 @@ export default function SettingsPage() {
                 {/* Courses export */}
                 <Card variant="elevated" hoverable>
                     <CardHeader>
-                        <CardTitle>📚 Export des cours</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                            <CoursesIcon className="inline-icon mr-2" size={24} /> Export des cours
+                        </CardTitle>
                         <CardDescription>
                             Téléchargez la liste complète des cours
                         </CardDescription>
@@ -141,10 +221,13 @@ export default function SettingsPage() {
                     <CardContent>
                         <div className={styles.exportButtons}>
                             <Button variant="outline" onClick={() => handleExportCourses('json')}>
-                                📄 JSON
+                                <JSONIcon size={16} /> JSON
                             </Button>
                             <Button variant="outline" onClick={() => handleExportCourses('csv')}>
-                                📊 CSV
+                                <CSVIcon size={16} /> CSV
+                            </Button>
+                            <Button variant="outline" onClick={() => handleExportPDF('courses')}>
+                                <PDFIcon size={16} /> PDF
                             </Button>
                         </div>
                     </CardContent>
@@ -153,7 +236,9 @@ export default function SettingsPage() {
                 {/* Categories export */}
                 <Card variant="elevated" hoverable>
                     <CardHeader>
-                        <CardTitle>📁 Export des catégories</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                            <CategoriesIcon className="inline-icon mr-2" size={24} /> Export des catégories
+                        </CardTitle>
                         <CardDescription>
                             Téléchargez la structure des catégories
                         </CardDescription>
@@ -161,31 +246,64 @@ export default function SettingsPage() {
                     <CardContent>
                         <div className={styles.exportButtons}>
                             <Button variant="outline" onClick={() => handleExportCategories('json')}>
-                                📄 JSON
+                                <JSONIcon size={16} /> JSON
                             </Button>
                             <Button variant="outline" onClick={() => handleExportCategories('csv')}>
-                                📊 CSV
+                                <CSVIcon size={16} /> CSV
+                            </Button>
+                            <Button variant="outline" onClick={() => handleExportPDF('categories')}>
+                                <PDFIcon size={16} /> PDF
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Activity export */}
+                {/* Students export */}
                 <Card variant="elevated" hoverable>
                     <CardHeader>
-                        <CardTitle>📋 Export de l'activité</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                            <StudentsIcon className="inline-icon mr-2" size={24} /> Export des élèves
+                        </CardTitle>
                         <CardDescription>
-                            Téléchargez l'historique des modifications
+                            Exportez la liste des élèves souhaitant s'inscrire à un cours
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className={styles.exportButtons}>
-                            <Button variant="outline" onClick={() => handleExportActivity('json')}>
-                                📄 JSON
-                            </Button>
-                            <Button variant="outline" onClick={() => handleExportActivity('csv')}>
-                                📊 CSV
-                            </Button>
+                        <div className={styles.studentExport}>
+                            <Select
+                                options={[{ value: '', label: 'Sélectionnez un cours...' }, ...courseOptions]}
+                                value={selectedCourseId}
+                                onChange={(value) => setSelectedCourseId(value)}
+                                fullWidth
+                            />
+                            {selectedCourseId && (
+                                <p className={styles.studentCount}>
+                                    <strong>{studentCount}</strong> élève(s) en attente d'inscription
+                                </p>
+                            )}
+                            <div className={styles.exportButtons}>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => handleExportStudents('json')}
+                                    disabled={!selectedCourseId || studentCount === 0}
+                                >
+                                    <JSONIcon size={16} /> JSON
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => handleExportStudents('csv')}
+                                    disabled={!selectedCourseId || studentCount === 0}
+                                >
+                                    <CSVIcon size={16} /> CSV
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={handleExportStudentsPDF}
+                                    disabled={!selectedCourseId || studentCount === 0}
+                                >
+                                    <PDFIcon size={16} /> PDF
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -193,7 +311,9 @@ export default function SettingsPage() {
                 {/* Full backup */}
                 <Card variant="elevated" hoverable>
                     <CardHeader>
-                        <CardTitle>💾 Sauvegarde complète</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                            <ArchiveIcon className="inline-icon mr-2" size={24} /> Sauvegarde complète
+                        </CardTitle>
                         <CardDescription>
                             Exportez toutes les données en un seul fichier
                         </CardDescription>
@@ -205,57 +325,6 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Data management */}
-            <Card variant="default">
-                <CardHeader>
-                    <CardTitle>⚠️ Gestion des données</CardTitle>
-                    <CardDescription>
-                        Actions de maintenance et réinitialisation
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className={styles.dangerZone}>
-                        <div className={styles.dangerInfo}>
-                            <h4>Réinitialiser les données</h4>
-                            <p>
-                                Supprime toutes les données locales et recharge les données de démonstration.
-                                Cette action est irréversible.
-                            </p>
-                        </div>
-                        <Button variant="danger" onClick={handleClearData}>
-                            Réinitialiser
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Storage info */}
-            <Card variant="default">
-                <CardHeader>
-                    <CardTitle>📊 Informations de stockage</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className={styles.storageInfo}>
-                        <div className={styles.storageItem}>
-                            <span className={styles.storageLabel}>Cours</span>
-                            <span className={styles.storageValue}>{coursesStorage.getAll().length}</span>
-                        </div>
-                        <div className={styles.storageItem}>
-                            <span className={styles.storageLabel}>Catégories</span>
-                            <span className={styles.storageValue}>{categoriesStorage.getAll().length}</span>
-                        </div>
-                        <div className={styles.storageItem}>
-                            <span className={styles.storageLabel}>Logs d'activité</span>
-                            <span className={styles.storageValue}>{activityStorage.getAll().length}</span>
-                        </div>
-                        <div className={styles.storageItem}>
-                            <span className={styles.storageLabel}>Type de stockage</span>
-                            <span className={styles.storageValue}>LocalStorage (simulé)</span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

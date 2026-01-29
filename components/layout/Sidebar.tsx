@@ -41,33 +41,22 @@ const navItems: NavItem[] = [
         ),
     },
     {
+        label: 'Archives',
+        href: '/dashboard/courses/archived',
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M17.5 6.5V17.5H2.5V6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M19 2.5H1V6.5H19V2.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8.5 10H11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+        ),
+    },
+    {
         label: 'Catégories',
         href: '/dashboard/categories',
         icon: (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 5C3 3.89543 3.89543 3 5 3H8L10 5H15C16.1046 5 17 5.89543 17 7V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-        ),
-    },
-    {
-        label: 'Ordonnancement',
-        href: '/dashboard/ordering',
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <circle cx="6" cy="5" r="1.5" fill="currentColor" />
-                <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-                <circle cx="14" cy="15" r="1.5" fill="currentColor" />
-            </svg>
-        ),
-    },
-    {
-        label: 'Historique',
-        href: '/dashboard/history',
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M10 6V10L13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
         ),
     },
@@ -97,11 +86,13 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             <div className={styles.logoContainer}>
                 <Link href="/dashboard" className={styles.logo}>
                     <div className={styles.logoIcon}>
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                            <rect width="32" height="32" rx="8" fill="var(--primary-500)" />
-                            <path d="M8 12L16 6L24 12V20L16 26L8 20V12Z" stroke="white" strokeWidth="2" strokeLinejoin="round" />
-                            <circle cx="16" cy="16" r="4" fill="white" />
-                        </svg>
+                        <img
+                            src="/images/enspy-logo.png"
+                            alt="ENSPY Logo"
+                            width={34}
+                            height={34}
+                            style={{ borderRadius: '50%' }}
+                        />
                     </div>
                     {!isCollapsed && (
                         <div className={styles.logoText}>
@@ -131,8 +122,19 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             <nav className={styles.nav}>
                 <ul className={styles.navList}>
                     {navItems.map((item) => {
-                        const isActive = pathname === item.href ||
-                            (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                        // Logique spéciale: /dashboard/courses ne doit pas être actif quand on est sur /dashboard/courses/archived
+                        let isActive = false;
+                        if (item.href === '/dashboard') {
+                            // Dashboard: exact match only
+                            isActive = pathname === '/dashboard';
+                        } else if (item.href === '/dashboard/courses') {
+                            // Cours: actif seulement pour /dashboard/courses, pas pour /dashboard/courses/archived
+                            isActive = pathname === '/dashboard/courses' ||
+                                (pathname.startsWith('/dashboard/courses/') && !pathname.startsWith('/dashboard/courses/archived'));
+                        } else {
+                            // Autres pages: correspondance exacte ou startsWith
+                            isActive = pathname === item.href || pathname.startsWith(item.href);
+                        }
 
                         return (
                             <li key={item.href}>

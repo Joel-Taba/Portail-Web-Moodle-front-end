@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { EditIcon, DeleteIcon, FolderIcon, getCategoryIcon } from '@/components/icons';
 import type { Category } from '@/lib/types';
 import styles from './CategoryCard.module.css';
 
@@ -16,7 +17,6 @@ interface CategoryCardProps {
     subcategories: Category[];
     courseCount: number;
     onEdit: (category: Category) => void;
-    onDelete: (category: Category) => void;
     onAddSubcategory: (parentId: string) => void;
 }
 
@@ -25,7 +25,6 @@ export function CategoryCard({
     subcategories,
     courseCount,
     onEdit,
-    onDelete,
     onAddSubcategory,
 }: CategoryCardProps) {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -34,7 +33,6 @@ export function CategoryCard({
         <div className={styles.card}>
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
-                    <span className={styles.icon}>{category.icon || '📁'}</span>
                     <div className={styles.info}>
                         <h3 className={styles.name}>{category.name}</h3>
                         {category.description && (
@@ -82,7 +80,6 @@ export function CategoryCard({
                             {subcategories.map((sub) => (
                                 <div key={sub.id} className={styles.subcategoryItem}>
                                     <div className={styles.subcategoryInfo}>
-                                        <span className={styles.subcategoryIcon}>{sub.icon || '📂'}</span>
                                         <span className={styles.subcategoryName}>{sub.name}</span>
                                     </div>
                                     <div className={styles.subcategoryActions}>
@@ -91,14 +88,7 @@ export function CategoryCard({
                                             onClick={() => onEdit(sub)}
                                             title="Modifier"
                                         >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            className={`${styles.actionBtn} ${styles.danger}`}
-                                            onClick={() => onDelete(sub)}
-                                            title="Supprimer"
-                                        >
-                                            🗑️
+                                            <EditIcon size={14} />
                                         </button>
                                     </div>
                                 </div>
@@ -120,13 +110,6 @@ export function CategoryCard({
                 <div className={styles.actionButtons}>
                     <Button variant="outline" size="sm" onClick={() => onEdit(category)}>
                         Modifier
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDelete(category)}
-                    >
-                        Supprimer
                     </Button>
                 </div>
             </div>
